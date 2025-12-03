@@ -12,7 +12,7 @@ import glob
 from collections import defaultdict
 
 from .sliding_window_engine import SlidingWindowEngine
-from .utils import (
+from .inference_utils import (
     dict_to_device,
     register_adjacent_windows,
     estimate_pseudo_depth_and_intrinsics,
@@ -22,7 +22,7 @@ from .utils import (
     refine_depth_segments,
     sliding_window
 )
-from ...utils.geometry import homogenize_points, accumulate_sim3
+from .utils.geometry import homogenize_points
 
 STOP_SIGNAL = object()
 

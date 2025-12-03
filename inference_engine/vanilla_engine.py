@@ -1,7 +1,6 @@
-import torch
 import torch.nn as nn
 
-from .utils import estimate_pseudo_depth_and_intrinsics
+from .inference_utils import estimate_pseudo_depth_and_intrinsics
 
 
 class VanillaEngine(nn.Module):

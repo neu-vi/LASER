@@ -18,7 +18,6 @@ import math
 import json
 from collections import defaultdict, deque
 from pathlib import Path
-import numpy as np
 
 import torch
 import torch.distributed as dist

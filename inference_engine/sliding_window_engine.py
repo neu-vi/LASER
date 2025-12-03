@@ -2,8 +2,12 @@ import torch
 import torch.nn as nn
 
 from .vanilla_engine import VanillaEngine
-from .utils import dict_to_device, sliding_window, aggregate_windows, register_extrinsic_windows, \
-    estimate_pseudo_depth_and_intrinsics
+from .inference_utils import (
+    dict_to_device,
+    sliding_window,
+    aggregate_windows,
+    register_extrinsic_windows
+)
 
 
 class SlidingWindowEngine(VanillaEngine):
@@ -20,16 +24,6 @@ class SlidingWindowEngine(VanillaEngine):
         self.overlap = overlap
         self.intermediate_device = intermediate_device
         self.top_conf_percentile = 1 - top_conf_percentile if top_conf_percentile is not None else 0.0
-        # self.cam_intrinsic = None
-
-    # def _post_process_pcd_window(self, pcd_window):
-    #     if self.cam_intrinsic is None:
-    #         depth, intrinsic = estimate_pseudo_depth_and_intrinsics(pcd_window)
-    #         self.cam_intrinsic = torch.median(intrinsic, dim=0).values
-    #     else:
-    #         depth, intrinsic  = estimate_pseudo_depth_from_intrinsics(pcd_window, self.cam_intrinsic)
-    #
-    #     return depth, intrinsic
 
     def forward(self, images, depth_refine=True, debug=False, **kwargs):
         dim = 1 if len(images.shape) == 5 else 0
@@ -72,19 +66,3 @@ class SlidingWindowEngine(VanillaEngine):
                        'camera_poses': camera_poses[None],
                        'local_points': local_points[None]}
         return self._post_process_pred(predictions)
-
-        # depth = []
-        # intrinsic = []
-        # for pred in prediction_windows:
-        #     _depth, _intrinsic = self._post_process_pcd_window(pred['local_points'].squeeze(0))
-        #     depth.append(_depth)
-        #     intrinsic.append(_intrinsic)
-        # depth = aggregate_windows(depth, self.overlap, debug=debug)
-        # intrinsic = aggregate_windows(intrinsic, self.overlap, debug=debug)
-
-        # predictions = {'images': images[None],
-        #                'depth_conf': conf[None],
-        #                'extrinsic': camera_poses[None],
-        #                'depth': depth[None],
-        #                'intrinsic': intrinsic[None]}
-        # return predictions

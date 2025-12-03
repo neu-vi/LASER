@@ -2,6 +2,20 @@ import torch
 import numpy as np
 
 
+def homogenize_points(
+        points,
+):
+    """Convert batched points (xyz) to (xyz1)."""
+    return torch.cat([points, torch.ones_like(points[..., :1])], dim=-1)
+
+
+def homogenize_points_np(
+        points,
+):
+    """Convert batched points (xyz) to (xyz1)."""
+    return np.concatenate([points, np.ones_like(points[..., :1])], axis=-1)
+
+
 def register_camera_poses_kabsch(src_cam_poses: np.ndarray, tgt_cam_poses: np.ndarray, scale=1.0):
     assert src_cam_poses.shape == tgt_cam_poses.shape
     src_cam_pos = src_cam_poses[:, :3, 3]

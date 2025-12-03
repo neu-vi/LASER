@@ -2,8 +2,8 @@ import os
 import math
 import numpy as np
 import torch
-from vggt.utils.load_fn import load_and_preprocess_images
-from vggt.utils.geometry import closed_form_inverse_se3
+from utils.load_fn import load_and_preprocess_images
+from utils.geometry import closed_form_inverse_se3
 from eval.save_func import get_tum_poses, save_for_viser, get_se3_poses
 from vggt.utils.pose_enc import pose_encoding_to_extri_intri
 from eval.vo_eval import load_traj, eval_metrics, plot_trajectory, process_directory, calculate_averages
@@ -11,7 +11,6 @@ import eval.misc as misc
 import torch.distributed as dist
 from tqdm import tqdm
 from eval.eval_metadata import dataset_metadata
-from dycheck.emf import compute_angular_emf
 
 
 def eval_pose_estimation(args, model, device, dtype, save_dir=None, inverse_extrinsic=True, fps=None):
@@ -169,7 +168,7 @@ def eval_pose_estimation_dist(args, model, device, dtype, img_path, save_dir=Non
             rpe_rot_list.append(rpe_rot)
             seq_attr[seq] = {
                 'angular_emf': angular_emf,
-                'total_displacement' : total_displacement,
+                'total_displacement': total_displacement,
                 'avg_displacement': avg_displacement
             }
             # outfile_list.append(outfile)

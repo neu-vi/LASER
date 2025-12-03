@@ -28,7 +28,7 @@ def sintel_cam_read(filename):
     f = open(filename, "rb")
     check = np.fromfile(f, dtype=np.float32, count=1)[0]
     assert (
-        check == TAG_FLOAT
+            check == TAG_FLOAT
     ), " cam_read:: Wrong tag in flow file (should be: {0}, is: {1}). Big-endian machine? ".format(
         TAG_FLOAT, check
     )
@@ -66,12 +66,12 @@ def load_replica_traj(gt_file):
     return (traj_tum, timestamps_mat)
 
 
-def load_sintel_traj(gt_file): # './data/sintel/training/camdata_left/alley_2'
+def load_sintel_traj(gt_file):  # './data/sintel/training/camdata_left/alley_2'
     # Refer to ParticleSfM
     gt_pose_lists = sorted(os.listdir(gt_file))
     gt_pose_lists = [os.path.join(gt_file, x) for x in gt_pose_lists if x.endswith(".cam")]
     tstamps = [float(x.split("/")[-1][:-4].split("_")[-1]) for x in gt_pose_lists]
-    gt_poses = [sintel_cam_read(f)[1] for f in gt_pose_lists] # [1] means get the extrinsic
+    gt_poses = [sintel_cam_read(f)[1] for f in gt_pose_lists]  # [1] means get the extrinsic
     xyzs, wxyzs = [], []
     tum_gt_poses = []
     for gt_pose in gt_poses:
@@ -83,7 +83,7 @@ def load_sintel_traj(gt_file): # './data/sintel/training/camdata_left/alley_2'
         xyzw = R.as_quat()  # scalar-last for scipy
         wxyz = np.array([xyzw[-1], xyzw[0], xyzw[1], xyzw[2]])
         wxyzs.append(wxyz)
-        tum_gt_pose = np.concatenate([xyz, wxyz], 0) #TODO: check if this is correct
+        tum_gt_pose = np.concatenate([xyz, wxyz], 0)  # TODO: check if this is correct
         tum_gt_poses.append(tum_gt_pose)
 
     tum_gt_poses = np.stack(tum_gt_poses, 0)
@@ -156,7 +156,6 @@ def make_traj(args) -> PoseTrajectory3D:
 
 
 def eval_metrics(pred_traj, gt_traj=None, seq="", filename="", sample_stride=1):
-    
     if sample_stride > 1:
         pred_traj[0] = pred_traj[0][::sample_stride]
         pred_traj[1] = pred_traj[1][::sample_stride]
@@ -165,7 +164,7 @@ def eval_metrics(pred_traj, gt_traj=None, seq="", filename="", sample_stride=1):
             updated_gt_traj.append(gt_traj[0][::sample_stride])
             updated_gt_traj.append(gt_traj[1][::sample_stride])
             gt_traj = updated_gt_traj
-    
+
     pred_traj = make_traj(pred_traj)
 
     if gt_traj is not None:
@@ -248,7 +247,7 @@ def best_plotmode(traj):
 
 
 def plot_trajectory(
-    pred_traj, gt_traj=None, title="", filename="", align=True, correct_scale=True
+        pred_traj, gt_traj=None, title="", filename="", align=True, correct_scale=True
 ):
     pred_traj = make_traj(pred_traj)
 
@@ -275,7 +274,7 @@ def plot_trajectory(
     plot_collection.add_figure("traj_error", fig)
     plot_collection.export(filename, confirm_overwrite=False)
     plt.close(fig=fig)
-    print(f"Saved trajectory to {filename.replace('.png','')}_traj_error.png")
+    print(f"Saved trajectory to {filename.replace('.png', '')}_traj_error.png")
 
 
 def save_trajectory_tum_format(traj, filename):
@@ -284,7 +283,7 @@ def save_trajectory_tum_format(traj, filename):
     with Path(filename).open("w") as f:
         for i in range(traj.num_poses):
             f.write(
-                f"{traj.timestamps[i]} {tostr(traj.positions_xyz[i])} {tostr(traj.orientations_quat_wxyz[i][[0,1,2,3]])}\n"
+                f"{traj.timestamps[i]} {tostr(traj.positions_xyz[i])} {tostr(traj.orientations_quat_wxyz[i][[0, 1, 2, 3]])}\n"
             )
     print(f"Saved trajectory to {filename}")
 
@@ -292,17 +291,18 @@ def save_trajectory_tum_format(traj, filename):
 def extract_metrics(file_path):
     with open(file_path, 'r') as file:
         content = file.read()
-    
+
     # Extract metrics using regex
     ate_match = re.search(r'APE w.r.t. translation part \(m\).*?rmse\s+([0-9.]+)', content, re.DOTALL)
     rpe_trans_match = re.search(r'RPE w.r.t. translation part \(m\).*?rmse\s+([0-9.]+)', content, re.DOTALL)
     rpe_rot_match = re.search(r'RPE w.r.t. rotation angle in degrees \(deg\).*?rmse\s+([0-9.]+)', content, re.DOTALL)
-    
+
     ate = float(ate_match.group(1)) if ate_match else 0.0
     rpe_trans = float(rpe_trans_match.group(1)) if rpe_trans_match else 0.0
     rpe_rot = float(rpe_rot_match.group(1)) if rpe_rot_match else 0.0
-    
+
     return ate, rpe_trans, rpe_rot
+
 
 def process_directory(directory):
     results = []
@@ -315,20 +315,21 @@ def process_directory(directory):
                 seq_name = file.replace('_eval_metric.txt', '')
                 ate, rpe_trans, rpe_rot = extract_metrics(file_path)
                 results.append((seq_name, ate, rpe_trans, rpe_rot))
-    
+
     return results
+
 
 def calculate_averages(results):
     total_ate = sum(r[1] for r in results)
     total_rpe_trans = sum(r[2] for r in results)
     total_rpe_rot = sum(r[3] for r in results)
     count = len(results)
-    
+
     if count == 0:
         return 0.0, 0.0, 0.0
 
     avg_ate = total_ate / count
     avg_rpe_trans = total_rpe_trans / count
     avg_rpe_rot = total_rpe_rot / count
-    
+
     return avg_ate, avg_rpe_trans, avg_rpe_rot

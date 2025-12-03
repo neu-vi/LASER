@@ -8,7 +8,7 @@ from scipy.optimize import minimize
 import os
 from collections import defaultdict
 from eval.eval_metadata import dataset_metadata
-from vggt.utils.load_fn import load_and_preprocess_images
+from utils.load_fn import load_and_preprocess_images
 from vggt.utils.pose_enc import pose_encoding_to_extri_intri
 
 

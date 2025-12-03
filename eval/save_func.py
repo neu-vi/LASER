@@ -4,7 +4,7 @@ from copy import deepcopy
 from pathlib import Path
 import cv2
 from scipy.spatial.transform import Rotation
-from vggt.utils.geometry import closed_form_inverse_se3
+from utils.geometry import closed_form_inverse_se3
 import os
 
 
@@ -77,27 +77,28 @@ def save_trajectory_tum_format(poses, filename):
     with Path(filename).open("w") as f:
         for i in range(traj.num_poses):
             f.write(
-                f"{traj.timestamps[i]} {tostr(traj.positions_xyz[i])} {tostr(traj.orientations_quat_wxyz[i][[0,1,2,3]])}\n"
+                f"{traj.timestamps[i]} {tostr(traj.positions_xyz[i])} {tostr(traj.orientations_quat_wxyz[i][[0, 1, 2, 3]])}\n"
             )
 
-def save_depth_maps(depth_maps, path):        
+
+def save_depth_maps(depth_maps, path):
     for i, depth_map in enumerate(depth_maps):
         np.save(f'{path}/frame_{(i):04d}.npy', depth_map)
-        
+
 
 def save_rgb_imgs(imgs, path):
     imgs = imgs.transpose(0, 2, 3, 1)  # now (S, H, W, 3)
     for i, img in enumerate(imgs):
         # convert from rgb to bgr
         img = img[..., ::-1]
-        cv2.imwrite(f'{path}/frame_{i:04d}.png', (img*255).astype(np.uint8))
+        cv2.imwrite(f'{path}/frame_{i:04d}.png', (img * 255).astype(np.uint8))
 
 
 def save_conf_maps(conf, path):
     for i, c in enumerate(conf):
         np.save(f'{path}/conf_{i}.npy', c)
     return conf
-    
+
 
 def save_for_viser(pred_dict, scene_name, output_path="./output_dy", inverse_extrinsic=True):
     # Unpack prediction dict
@@ -120,7 +121,7 @@ def save_for_viser(pred_dict, scene_name, output_path="./output_dy", inverse_ext
     extrinsics_cam = extrinsics_cam[:, :3, :]
 
     os.makedirs(f'{output_path}/{scene_name}', exist_ok=True)
-    
+
     save_intrinsics(intrinsics_cam, f"{output_path}/{scene_name}/pred_intrinsics.txt")
     save_trajectory_tum_format(extrinsics_cam, f'{output_path}/{scene_name}/pred_traj.txt')
     save_depth_maps(depth_map, f'{output_path}/{scene_name}')

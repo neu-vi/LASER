@@ -4,15 +4,18 @@ import torch.nn as nn
 from collections import defaultdict
 
 from .streaming_window_engine import StreamingWindowEngine, STOP_SIGNAL
-from .utils import (
+from .inference_utils import (
     register_adjacent_windows,
     estimate_pseudo_depth_and_intrinsics,
     unproject_depth_to_local_points,
-    apply_sim3_to_pose,
     make_sp_graph,
     refine_depth_segments
 )
-from ...utils.geometry import homogenize_points, accumulate_sim3
+from .utils.geometry import (
+    homogenize_points,
+    apply_sim3_to_pose,
+    accumulate_sim3
+)
 
 
 class StreamingWindowEngineLC(StreamingWindowEngine):
@@ -25,7 +28,7 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
             top_conf_percentile: float = 0.5,
             window_size: int = 20,
             overlap: int = 5,
-            depth_refine=True,
+            depth_refine=False,
             cache_root: str = './cache'
     ):
         super().__init__(

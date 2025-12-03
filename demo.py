@@ -97,7 +97,7 @@ def run_dynamic_scene(args):
     img_names = [os.path.join(data_path, name) for name in img_names if name.endswith(('.png', '.jpg', '.jpeg'))][
                 ::args.sample_interval]
     print(f'Found {len(img_names)} images.')
-    run_model(img_names, scene_name, args.output_path, args.window_size, args.overlap)
+    run_model(img_names, scene_name, args.output_path)
 
 
 if __name__ == "__main__":
