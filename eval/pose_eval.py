@@ -13,20 +13,20 @@ from tqdm import tqdm
 from eval.eval_metadata import dataset_metadata
 
 
-def eval_pose_estimation(args, model, device, dtype, save_dir=None, inverse_extrinsic=True, fps=None):
+def eval_pose_estimation(args, model, device, dtype, save_dir=None, inverse_extrinsic=True):
     metadata = dataset_metadata.get(args.eval_dataset, dataset_metadata['sintel'])
     img_path = metadata['img_path']
     mask_path = metadata['mask_path']
 
     ate_mean, rpe_trans_mean, rpe_rot_mean, seq_attr, outfile_list, bug = eval_pose_estimation_dist(
         args, model, device, dtype, save_dir=save_dir, img_path=img_path, mask_path=mask_path,
-        inverse_extrinsic=inverse_extrinsic, fps=fps
+        inverse_extrinsic=inverse_extrinsic
     )
     return ate_mean, rpe_trans_mean, rpe_rot_mean, seq_attr, outfile_list, bug
 
 
 def eval_pose_estimation_dist(args, model, device, dtype, img_path, save_dir=None, mask_path=None,
-                              inverse_extrinsic=True, fps=None):
+                              inverse_extrinsic=True):
     metadata = dataset_metadata.get(args.eval_dataset, dataset_metadata['sintel'])
     anno_path = metadata.get('anno_path', None)
 
@@ -146,11 +146,6 @@ def eval_pose_estimation_dist(args, model, device, dtype, img_path, save_dir=Non
                     pred_traj, gt_traj, title=seq, filename=f'{save_dir}/{seq}.png'
                 )
                 gt_traj_se3 = get_se3_poses(gt_traj[0])
-                angular_emf = compute_angular_emf(
-                    gt_traj_se3[:, :3, :3].transpose(0, 2, 1),
-                    gt_traj_se3[:, :3, 3],
-                    fps=fps
-                ) if fps is not None else 0
                 translations = gt_traj_se3[:, :3, 3]
                 delta_translations = translations[1:] - translations[:-1]
                 displacements = np.linalg.norm(delta_translations, axis=-1)
@@ -158,16 +153,14 @@ def eval_pose_estimation_dist(args, model, device, dtype, img_path, save_dir=Non
                 avg_displacement = np.mean(displacements)
 
             else:
-                ate, rpe_trans, rpe_rot, angular_emf = 0, 0, 0, 0
+                ate, rpe_trans, rpe_rot = 0, 0, 0
                 total_displacement, avg_displacement = 0, 0
-                outfile = None
                 bug = True
 
             ate_list.append(ate)
             rpe_trans_list.append(rpe_trans)
             rpe_rot_list.append(rpe_rot)
             seq_attr[seq] = {
-                'angular_emf': angular_emf,
                 'total_displacement': total_displacement,
                 'avg_displacement': avg_displacement
             }
