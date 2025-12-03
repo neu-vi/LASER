@@ -1,6 +1,6 @@
 import torch
 
-from utils.geometry import (
+from .utils.geometry import (
     register_camera_poses_kabsch_pytorch,
     apply_sim3_to_pose
 )

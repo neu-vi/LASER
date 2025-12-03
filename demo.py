@@ -15,7 +15,7 @@ dtype = torch.bfloat16 if torch.cuda.get_device_capability()[0] >= 8 else torch.
 
 
 def get_args_parser():
-    parser = argparse.ArgumentParser('Depth metric evaluation', add_help=False)
+    parser = argparse.ArgumentParser('Streaming Pi3 Demo', add_help=False)
     parser.add_argument('--model_ckpt', default=None, type=str, help='checkpoint to load model')
     parser.add_argument('--data_path', type=str, help='sequence data path')
     parser.add_argument('--scene_name', default=None, type=str, help='scene_name')

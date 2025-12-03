@@ -16,7 +16,7 @@ def homogenize_points(
     return torch.cat([points, torch.ones_like(points[..., :1])], dim=-1)
 
 
-from ..dependency.distortion import apply_distortion, iterative_undistortion, single_undistortion
+from vggt.dependency.distortion import apply_distortion, iterative_undistortion, single_undistortion
 
 
 def unproject_depth_map_to_point_map(
