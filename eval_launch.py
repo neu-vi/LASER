@@ -115,7 +115,7 @@ def inference_streaming_model_lc(model, imgs, img_dir, *args, **kwargs):
     cache_path = Path(model.cache_dir)
     cache_path_lc = cache_path.parent / f'{cache_path.name}_lc'
     lc_engine = LoopClosureEngine(
-        load_config('configs/base_config.yaml'),
+        load_config('configs/loop_config.yaml'),
         img_dir,
         cache_path_lc,
         model.delegate,

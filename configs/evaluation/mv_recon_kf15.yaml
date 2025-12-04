@@ -1,0 +1,28 @@
+# @package _global_
+
+defaults:
+  - override /data: mv_recon_kf15
+
+name: mv_recon
+
+pi3:
+  pretrained_model_name_or_path: yyfz233/Pi3
+  # pretrained_model_name_or_path: checkpoints/Pi3
+
+eval_datasets:
+  # - 7scenes-kf15
+  - NRGBD-kf15
+  # - DTU
+  # - ETH3D
+
+no_crop: True
+load_img_size: 518
+
+device: cuda
+
+verbose: False
+
+seed: 42
+
+dir_suffix: null
+save_suffix: null

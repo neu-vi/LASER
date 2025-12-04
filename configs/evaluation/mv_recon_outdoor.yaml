@@ -1,0 +1,25 @@
+# @package _global_
+
+defaults:
+  - override /data: mv_recon_all
+
+name: mv_recon_outdoor
+
+pi3:
+  pretrained_model_name_or_path: yyfz233/Pi3
+  # pretrained_model_name_or_path: checkpoints/Pi3
+
+eval_datasets:
+  - Waymo
+
+no_crop: True
+load_img_size: 518
+
+device: cuda
+
+verbose: False
+
+seed: 42
+
+dir_suffix: null
+save_suffix: null
