@@ -132,7 +132,6 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
         for cache in parsed_caches:
             # apply local to world transformation
             cache_sim3 = cache['sim3']
-            # ref_sim3 = accumulate_sim3(ref_sim3, cache_sim3)
             s_d, R, t = accumulate_sim3(ref_sim3, cache_sim3)
             if 'scale_mask' in cache.keys():
                 cache['local_points'] = ref_sim3[0] * cache.pop('scale_mask') * cache.pop('local_points')

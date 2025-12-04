@@ -131,8 +131,6 @@ def inference_streaming_model_lc(model, imgs, img_dir, *args, **kwargs):
 
     os.makedirs(str(cache_path_lc), exist_ok=True)
     for idx, (pred, sim3_lc) in enumerate(zip(raw_predictions, sim3_list_lc)):
-        # s, R, t = sim3_lc
-        # pred['sim3'] = s, torch.from_numpy(R.astype(np.float32)), torch.from_numpy(t.astype(np.float32))
         pred['sim3'] = sim3_lc
         torch.save(pred, str(cache_path_lc / f'window_cache_{idx}.pt'))
 
@@ -142,7 +140,7 @@ def inference_streaming_model_lc(model, imgs, img_dir, *args, **kwargs):
     for cache_fname in cache_files_lc[1:]:
         parsed_caches.append(StreamingWindowEngine.parse_cache_file(cache_fname, overlap=model.overlap))
 
-    ret_dict = StreamingWindowEngine._post_process_pred(StreamingWindowEngine.aggregate_caches(parsed_caches))
+    ret_dict = StreamingWindowEngineLC._post_process_pred(StreamingWindowEngineLC.aggregate_caches(parsed_caches))
     shutil.rmtree(cache_path_lc)
     for key in ret_dict.keys():
         if isinstance(ret_dict[key], torch.Tensor):
