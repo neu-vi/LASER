@@ -74,7 +74,7 @@ def get_args_parser():
                         help='choose dataset for pose evaluation')
     # model variant
     parser.add_argument('--model', type=str, required=True,
-                        choices=['pi3', 'streaming_pi3', 'streaming_pi3'],
+                        choices=['pi3', 'streaming_pi3', 'streaming_pi3_lc'],
                         help='choose model for pose evaluation')
     # checkpoint loading
     parser.add_argument('--ckpt_path', default=None, type=str, help='trained checkpoint for evaluation')

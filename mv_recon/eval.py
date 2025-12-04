@@ -42,7 +42,7 @@ def create_streaming_pi3(cfg):
     return model
 
 
-@hydra.main(version_base="1.2", config_path="../configs", config_name="eval_mv_recon")
+@hydra.main(version_base="1.2", config_path="../configs", config_name="eval_mv_recon_dense")
 def main(hydra_cfg: DictConfig):
     all_eval_datasets: DictConfig = hydra_cfg.eval_datasets  # see configs/evaluation/mv_recon.yaml
     all_data_info: DictConfig = hydra_cfg.data  # see configs/data

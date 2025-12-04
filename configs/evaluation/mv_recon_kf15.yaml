@@ -12,8 +12,6 @@ pi3:
 eval_datasets:
   # - 7scenes-kf15
   - NRGBD-kf15
-  # - DTU
-  # - ETH3D
 
 no_crop: True
 load_img_size: 518

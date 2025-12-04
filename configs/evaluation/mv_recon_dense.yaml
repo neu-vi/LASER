@@ -12,8 +12,6 @@ pi3:
 eval_datasets:
   - 7scenes-dense
   - NRGBD-dense
-  # - DTU
-  # - ETH3D
 
 no_crop: True
 load_img_size: 518

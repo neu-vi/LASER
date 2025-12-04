@@ -20,24 +20,3 @@ NRGBD-kf15:
     strategy: stride
     kf_every: 15  # our dense setting
   seq_id_map: datasets/seq-id-maps/NRGBD_mv-recon_seq-id-map-kf15.json
-
-DTU:
-  cfg:
-    _target_: datasets.dtu.DTU
-    split: test
-    DTU_DIR: data/dtu
-    load_img_size: ${load_img_size}
-    cache_file: data/dataset_cache/dtu_mv_recon_cache.npy
-  sampling:
-    strategy: all
-  seq_id_map: datasets/seq-id-maps/DTU_mv-recon_seq-id-map-all.json
-
-ETH3D:
-  cfg:
-    _target_: datasets.eth3d.ETH3D
-    ETH3D_DIR: data/eth3d
-    load_img_size: ${load_img_size}
-    cache_file: data/dataset_cache/eth3d_mv_recon_cache.npy
-  sampling:
-    strategy: all
-  seq_id_map: datasets/seq-id-maps/ETH3D_mv-recon_seq-id-map-all.json
