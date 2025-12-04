@@ -165,11 +165,14 @@ def pi3_main(args, engine_cls):
 
     os.makedirs(args.output_dir, exist_ok=True)
 
+    if args.eval_dataset == 'kitti_odometry':
+        infer_func = partial(inference_streaming_model_lc, model)
+    else:
+        infer_func = partial(inference_streaming_model, model)
     if args.mode == 'eval_pose':
         ate_mean, rpe_trans_mean, rpe_rot_mean, seq_attr, outfile_list, bug = eval_pose_estimation(
             args,
-            partial(inference_streaming_model, model),
-            # partial(inference_streaming_model_lc, model),
+            infer_func,
             device,
             dtype,
             save_dir=args.output_dir,
@@ -199,6 +202,6 @@ if __name__ == '__main__':
         pi3_main(args, VanillaEngine)
     elif model_variant == 'streaming_pi3':
         pi3_main(args, partial(StreamingWindowEngine, dtype=dtype, inference_device=device, window_size=20, overlap=5,
-                               top_conf_percentile=0.3))
+                               top_conf_percentile=0.5))
     else:
         raise NotImplementedError
