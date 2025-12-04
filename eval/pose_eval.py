@@ -102,7 +102,7 @@ def eval_pose_estimation_dist(args, model, device, dtype, img_path, save_dir=Non
             with torch.no_grad():
                 with torch.cuda.amp.autocast(dtype=dtype):
                     # Predict attributes including cameras, depth maps, and point maps.
-                    predictions = model(imgs, dir_path) if args.eval_dataset == 'kitti_odometry' else model(imgs)
+                    predictions = model(imgs) if args.model == 'streaming_pi3' else model(imgs, dir_path)
 
             if 'pose_enc' in predictions.keys():
                 print("Converting pose encoding to extrinsic and intrinsic matrices...")

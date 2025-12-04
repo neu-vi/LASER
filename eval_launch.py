@@ -1,7 +1,7 @@
 from eval.pose_eval import eval_pose_estimation
 from eval.depth_eval import eval_mono_depth_estimation
 from pi3.models.pi3 import Pi3
-from inference_engine import VanillaEngine, StreamingWindowEngine
+from inference_engine import VanillaEngine, StreamingWindowEngine, StreamingWindowEngineLC
 from loop_closure.loop_closure import LoopClosureEngine
 from loop_closure.utils.config_utils import load_config
 from functools import partial
@@ -74,7 +74,7 @@ def get_args_parser():
                         help='choose dataset for pose evaluation')
     # model variant
     parser.add_argument('--model', type=str, required=True,
-                        choices=['pi3', 'streaming_pi3'],
+                        choices=['pi3', 'streaming_pi3', 'streaming_pi3'],
                         help='choose model for pose evaluation')
     # checkpoint loading
     parser.add_argument('--ckpt_path', default=None, type=str, help='trained checkpoint for evaluation')
@@ -165,10 +165,10 @@ def pi3_main(args, engine_cls):
 
     os.makedirs(args.output_dir, exist_ok=True)
 
-    if args.eval_dataset == 'kitti_odometry':
-        infer_func = partial(inference_streaming_model_lc, model)
-    else:
+    if args.model == 'streaming_pi3':
         infer_func = partial(inference_streaming_model, model)
+    else:
+        infer_func = partial(inference_streaming_model_lc, model)
     if args.mode == 'eval_pose':
         ate_mean, rpe_trans_mean, rpe_rot_mean, seq_attr, outfile_list, bug = eval_pose_estimation(
             args,
@@ -203,5 +203,8 @@ if __name__ == '__main__':
     elif model_variant == 'streaming_pi3':
         pi3_main(args, partial(StreamingWindowEngine, dtype=dtype, inference_device=device, window_size=20, overlap=5,
                                top_conf_percentile=0.5))
+    elif model_variant == 'streaming_pi3_lc':
+        pi3_main(args, partial(StreamingWindowEngineLC, dtype=dtype, inference_device=device, window_size=75, overlap=30,
+                               top_conf_percentile=0.3))
     else:
         raise NotImplementedError

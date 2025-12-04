@@ -17,15 +17,6 @@ Model:
   # If reference_frame_mid == True, use the middle frame within the chunk as the 
   # reference frame to alleviate the scale drift when loop closure is not available.
   # Disable it for now cuz i found some bugs related to this feature [by deng on 09 Oct].
-  
-  IRLS:
-    delta: 0.1
-    max_iters: 5
-    tol: 1e-9
-
-  Pointcloud_Save:
-    sample_ratio: 0.015
-    conf_threshold_coef: 0.75 # conf_threshold = np.mean(confs) * conf_threshold_coef
 
 Loop:
   DBoW:
