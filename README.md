@@ -30,14 +30,14 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=sintel \
---output_dir="outputs/sintel_depth" \
+--output_dir="outputs/video_depth/sintel_depth" \
 --full_seq \
 --no_crop
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_metric.py \
 --eval_dataset=sintel \
---result_dir="outputs/sintel_depth" \
---output_dir="outputs"
+--result_dir="outputs/video_depth/sintel_depth" \
+--output_dir="outputs/video_depth"
 ```
 
 Bonn
@@ -48,13 +48,13 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=bonn \
---output_dir="outputs/bonn_depth" \
+--output_dir="outputs/video_depth/bonn_depth" \
 --no_crop
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_metric.py \
 --eval_dataset=bonn \
---result_dir="outputs/bonn_depth" \
---output_dir="outputs"
+--result_dir="outputs/video_depth/bonn_depth" \
+--output_dir="outputs/video_depth"
 ```
 
 KITTI
@@ -65,15 +65,15 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=kitti \
---output_dir="outputs/kitti_depth" \
+--output_dir="outputs/video_depth/kitti_depth" \
 --no_crop \
 --flow_loss_weight 0 \
 --translation_weight 1e-3
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_metric.py \
 --eval_dataset=kitti \
---result_dir="outputs/kitti_depth" \
---output_dir="outputs"
+--result_dir="outputs/video_depth/kitti_depth" \
+--output_dir="outputs/video_depth"
 ```
 
 ## Camera Pose
@@ -86,7 +86,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=sintel \
---output_dir="outputs/sintel_pose"
+--output_dir="outputs/cam_pose/sintel_pose"
 ```
 
 ScanNet
@@ -97,7 +97,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=scannet \
---output_dir="outputs/scannet_pose"
+--output_dir="outputs/cam_pose/scannet_pose"
 ```
 
 TUM
@@ -108,7 +108,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=tum \
---output_dir="outputs/tum_pose"
+--output_dir="outputs/cam_pose/tum_pose"
 ```
 
 KITTI Odometry
@@ -119,7 +119,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3_lc \
 --eval_dataset=kitti_odometry \
---output_dir="streaming_pi3_lc_results/kitti_odometry_pose"
+--output_dir="outputs/cam_pose/kitti_odometry_pose"
 ```
 
 ## MV Recon
