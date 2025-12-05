@@ -2,6 +2,8 @@ Compile cython modules
 ```
 python setup.py build_ext --inplace
 ```
+# Evaluation
+Change dataset paths within `eval/eval_meta.py` accordingly
 
 ## Video Depth
 
@@ -13,14 +15,14 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=sintel \
---output_dir="streaming_pi3_results/sintel_depth" \
+--output_dir="outputs/sintel_depth" \
 --full_seq \
 --no_crop
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_metric.py \
 --eval_dataset=sintel \
---result_dir="streaming_pi3_results/sintel_depth" \
---output_dir="streaming_pi3_results"
+--result_dir="outputs/sintel_depth" \
+--output_dir="outputs"
 ```
 
 Bonn
@@ -31,13 +33,13 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=bonn \
---output_dir="streaming_pi3_results/bonn_depth" \
+--output_dir="outputs/bonn_depth" \
 --no_crop
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_metric.py \
 --eval_dataset=bonn \
---result_dir="streaming_pi3_results/bonn_depth" \
---output_dir="streaming_pi3_results"
+--result_dir="outputs/bonn_depth" \
+--output_dir="outputs"
 ```
 
 KITTI
@@ -48,15 +50,15 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=kitti \
---output_dir="streaming_pi3_results/kitti_depth" \
+--output_dir="outputs/kitti_depth" \
 --no_crop \
 --flow_loss_weight 0 \
 --translation_weight 1e-3
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_metric.py \
 --eval_dataset=kitti \
---result_dir="streaming_pi3_results/kitti_depth" \
---output_dir="streaming_pi3_results"
+--result_dir="outputs/kitti_depth" \
+--output_dir="outputs"
 ```
 
 ## Camera Pose
@@ -69,7 +71,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=sintel \
---output_dir="streaming_pi3_results/sintel_pose"
+--output_dir="outputs/sintel_pose"
 ```
 
 ScanNet
@@ -80,7 +82,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=scannet \
---output_dir="streaming_pi3_results/scannet_pose"
+--output_dir="outputs/scannet_pose"
 ```
 
 TUM
@@ -91,7 +93,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --mode=eval_pose \
 --model=streaming_pi3 \
 --eval_dataset=tum \
---output_dir="streaming_pi3_results/tum_pose"
+--output_dir="outputs/tum_pose"
 ```
 
 KITTI Odometry
@@ -106,3 +108,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 ```
 
 ## MV Recon
+Put all datasets in `data/`
+```
+python mv_recon/eval.py
+```

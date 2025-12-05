@@ -10,7 +10,7 @@ import logging
 from omegaconf import DictConfig
 from pi3.models.pi3 import Pi3
 from utils.interfaces import infer_mv_pointclouds, infer_streaming_mv_pointclouds
-from .eval_utils import umeyama, accuracy, completion
+from mv_recon.eval_utils import umeyama, accuracy, completion
 from utils.messages import set_default_arg, write_csv
 
 # Additional models
@@ -94,9 +94,9 @@ def main(hydra_cfg: DictConfig):
 
             # 3. real inference, predicted pointcloud aligned to ground truth (data_h, data_w)
             data_h, data_w = images.shape[-2:]
-            # pred_pts: np.ndarray   = infer_mv_pointclouds(filelist, model, hydra_cfg, (data_h, data_w))  # (N, H, W, 3)
-            pred_pts: np.ndarray = infer_streaming_mv_pointclouds(filelist, model, hydra_cfg,
-                                                                  (data_h, data_w))  # (N, H, W, 3)
+            # pred_pts, conf   = infer_mv_pointclouds(filelist, model, hydra_cfg, (data_h, data_w))  # (N, H, W, 3)
+            pred_pts, conf = infer_streaming_mv_pointclouds(filelist, model, hydra_cfg,
+                                                            (data_h, data_w))  # (N, H, W, 3)
             # VGGT-like output format
             # pred_pts: np.ndarray   = infer_vggt_mv_pointclouds(filelist, model, hydra_cfg, (data_h, data_w))  # (N, H, W, 3)
 
@@ -213,7 +213,7 @@ def main(hydra_cfg: DictConfig):
 
 
 if __name__ == "__main__":
-    set_default_arg("evaluation", "mv_recon")
+    set_default_arg("evaluation", "mv_recon_dense")
     os.environ["HYDRA_FULL_ERROR"] = '1'
     with torch.no_grad():
         main()
