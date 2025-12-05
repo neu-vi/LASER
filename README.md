@@ -2,6 +2,21 @@ Compile cython modules
 ```
 python setup.py build_ext --inplace
 ```
+
+# Demo
+```
+export PYTHONPATH="./":$PYTHONPATH
+
+python demo.py \
+--data_path DATA_PATH \
+--output_path "./viser_results" \
+--cache_path "./cache" \
+--sample_interval 1 \
+--window_size 30 \
+--overlap 10 \
+--depth_refine
+```
+
 # Evaluation
 Change dataset paths within `eval/eval_meta.py` accordingly
 
