@@ -10,7 +10,7 @@ import logging
 from omegaconf import DictConfig
 from pi3.models.pi3 import Pi3
 from utils.interfaces import infer_mv_pointclouds, infer_streaming_mv_pointclouds
-from mv_recon.utils import umeyama, accuracy, completion
+from .eval_utils import umeyama, accuracy, completion
 from utils.messages import set_default_arg, write_csv
 
 # Additional models
