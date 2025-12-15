@@ -17,7 +17,7 @@ dataset_metadata = {
         'process_func': None,  # Not used in mono depth estimation
     },
     'kitti': {
-        'img_path': "/projects/vig/Datasets/4D_dataset/kitti/depth_selection/val_selection_cropped/image_gathered",
+        'img_path': "data/kitti/depth_selection/val_selection_cropped/image_gathered",
         # Default path
         'mask_path': None,
         'dir_path_func': lambda img_path, seq: os.path.join(img_path, seq),
@@ -30,7 +30,7 @@ dataset_metadata = {
         'process_func': lambda args, img_path: process_kitti(args, img_path),
     },
     'bonn': {
-        'img_path': "/projects/vig/Datasets/bonn/rgbd_bonn_dataset",
+        'img_path': "data/bonn/rgbd_bonn_dataset",
         'mask_path': None,
         'dir_path_func': lambda img_path, seq: os.path.join(img_path, f'rgbd_bonn_{seq}', 'rgb_110'),
         'gt_traj_func': lambda img_path, anno_path, seq: os.path.join(img_path, f'rgbd_bonn_{seq}',
@@ -48,7 +48,7 @@ dataset_metadata = {
         'process_func': lambda args, img_path: process_nyu(args, img_path),
     },
     'scannet': {
-        'img_path': "/projects/vig/Datasets/4D_dataset/scannetv2",
+        'img_path': "data/scannetv2",
         'mask_path': None,
         'dir_path_func': lambda img_path, seq: os.path.join(img_path, seq, 'color_90'),
         'gt_traj_func': lambda img_path, anno_path, seq: os.path.join(img_path, seq, 'pose_90.txt'),
@@ -60,7 +60,7 @@ dataset_metadata = {
         'process_func': lambda args, img_path: process_scannet(args, img_path),
     },
     'tum': {
-        'img_path': "/projects/vig/Datasets/tum/",
+        'img_path': "data/tum",
         'mask_path': None,
         'dir_path_func': lambda img_path, seq: os.path.join(img_path, seq, 'rgb_90'),
         'gt_traj_func': lambda img_path, anno_path, seq: os.path.join(img_path, seq, 'groundtruth_90.txt'),
@@ -72,8 +72,8 @@ dataset_metadata = {
         'process_func': None,
     },
     'sintel': {
-        'img_path': "/projects/vig/Datasets/sintel/training/final",
-        'anno_path': "/projects/vig/Datasets/sintel/training/camdata_left",
+        'img_path': "data/sintel/training/final",
+        'anno_path': "data/sintel/training/camdata_left",
         'mask_path': None,
         'dir_path_func': lambda img_path, seq: os.path.join(img_path, seq),
         'gt_traj_func': lambda img_path, anno_path, seq: os.path.join(anno_path, seq),
@@ -86,7 +86,7 @@ dataset_metadata = {
         'process_func': lambda args, img_path: process_sintel(args, img_path),
     },
     'kitti_odometry': {
-        'img_path': "/projects/vig/Datasets/KITTI_Odometry/dataset",  # Default path
+        'img_path': "data/KITTI_Odometry/dataset",  # Default path
         'mask_path': None,
         'dir_path_func': lambda img_path, seq: os.path.join(img_path, 'sequences', seq, 'image_2'),
         'gt_traj_func': lambda img_path, anno_path, seq: os.path.join(img_path, 'poses', f'{seq}.txt'),
@@ -98,7 +98,7 @@ dataset_metadata = {
         'process_func': None,
     },
     'waymo': {
-        'img_path': "/projects/vig/Datasets/waymo_processed",
+        'img_path': "data/waymo_processed",
         'dir_path_func': lambda img_path, seq: os.path.join(img_path, f'segment-{seq}_with_camera_labels.tfrecord'),
         'gt_traj_func': lambda img_path, anno_path, seq: None,
         'traj_format': None,

@@ -1,0 +1,13 @@
+torch
+torchvision
+numpy==1.26.4
+Pillow
+huggingface_hub
+einops
+safetensors
+Cython
+tqdm
+opencv-python
+scipy
+trimesh
+evo

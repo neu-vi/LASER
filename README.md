@@ -1,29 +1,85 @@
-Compile cython modules
-```
+<div align="center">
+<h1>LASER: Layer-wise Scale Alignment for Training-Free Streaming 4D Reconstruction</h1>
+<a href="https://arxiv.org/abs/xxxx.xxxxx"><img src="https://img.shields.io/badge/arXiv-xxxx.xxxxx-b31b1b" alt="arXiv"></a>
+<a href="https://neu-vi.github.io/LASER/"><img src="https://img.shields.io/badge/Project-Website-orange" alt="Project Page"></a>
+
+[Tianye Ding<sup>1*</sup>](https://jerrygcding.github.io/), 
+[Yiming Xie<sup>1*</sup>](https://ymingxie.github.io/), 
+[Yiqing Liang<sup>2*</sup>](https://lynl7130.github.io/), 
+[Moitreya Chatterjee<sup>3</sup>](https://sites.google.com/site/metrosmiles/), 
+[Pedro Miraldo<sup>3</sup>](https://pmiraldo.github.io/), 
+[Huaizu Jiang<sup>1</sup>](https://jianghz.me/)\
+<sup>1</sup> Northeastern University, <sup>2</sup> Independent Researcher, <sup>3</sup> Mitsubishi Electric Research Laboratories\
+<sup>*</sup> Equal Contribution
+</div>
+
+---
+
+## 📢 Updates
+* **[2025-12-15]** ArXiv preprint released.
+
+---
+
+## 📝 To-Do List
+
+- [x] Release framework codebase
+- [x] Release inference code
+- [x] Release evaluation code
+- [ ] Add Viser integration
+
+---
+
+## 💡 Abstract
+We propose LASER, a training-free framework that converts an offline reconstruction model into a streaming system by aligning predictions across consecutive temporal windows. 
+We observe that simple similarity transformation ($\mathrm{Sim}(3)$) alignment fails due to layer depth misalignment: monocular scale ambiguity causes relative depth scales of different scene layers to vary inconsistently between windows. 
+To address this, we introduce layer-wise scale alignment, which segments depth predictions into discrete layers, computes per-layer scale factors, and propagates them across both adjacent windows and timestamps.
+
+---
+
+## 🛠️ Installation
+
+```bash
+# 1. Clone the repository
+git clone --recursive git@github.com:neu-vi/LASER.git
+cd LASER
+
+# 2. Create environment
+conda create -n laser -y python=3.11
+conda activate laser
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Compile cython modules
 python setup.py build_ext --inplace
 ```
 
-# Demo
-```
+---
+
+## 🚀 Usage
+
+### Demo
+```bash
 export PYTHONPATH="./":$PYTHONPATH
 
 python demo.py \
 --data_path DATA_PATH \
 --output_path "./viser_results" \
 --cache_path "./cache" \
---sample_interval 1 \
---window_size 30 \
---overlap 10 \
+--sample_interval SAMPLE_INTERVAL \
+--window_size WINDOW_SIZE \
+--overlap OVERLAP \
 --depth_refine
 ```
 
-# Evaluation
-Change dataset paths within `eval/eval_meta.py` accordingly
+## Evaluation
+Put all datasets in `data/` OR
+change dataset paths within `eval/eval_meta.py` accordingly.
 
-## Video Depth
+### Video Depth
 
 Sintel
-```
+```bash
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
@@ -41,7 +97,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_met
 ```
 
 Bonn
-```
+```bash
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
@@ -58,7 +114,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_met
 ```
 
 KITTI
-```
+```bash
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
@@ -76,10 +132,10 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_met
 --output_dir="outputs/video_depth"
 ```
 
-## Camera Pose
+### Camera Pose
 
 Sintel
-```
+```bash
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
@@ -90,7 +146,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 ```
 
 ScanNet
-```
+```bash
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
@@ -101,7 +157,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 ```
 
 TUM
-```
+```bash
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
@@ -112,7 +168,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 ```
 
 KITTI Odometry
-```
+```bash
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
@@ -122,8 +178,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --output_dir="outputs/cam_pose/kitti_odometry_pose"
 ```
 
-## MV Recon
-Put all datasets in `data/`
-```
+### MV Recon
+```bash
 python mv_recon/eval.py
 ```
