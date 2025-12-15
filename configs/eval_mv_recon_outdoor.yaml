@@ -1,0 +1,7 @@
+defaults:
+  - general: default
+  - data: mv_recon_all
+  - evaluation: mv_recon_outdoor
+  - override hydra/job_logging: custom
+  # - override hydra/hydra_logging: colorlog
+  - _self_

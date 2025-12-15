@@ -1,0 +1,30 @@
+7scenes-all:
+  cfg:
+    _target_: datasets.sevenscenes.SevenScenes
+    split: test
+    SEVENSCENES_DIR: data/7scenes
+    load_img_size: ${load_img_size}
+    cache_file: data/dataset_cache/7scenes_mv_recon_cache.npy
+  sampling:
+    strategy: all
+  seq_id_map: datasets/seq-id-maps/7scenes_mv-recon_seq-id-map-all.json
+
+NRGBD-all:
+  cfg:
+    _target_: datasets.nrgbd.NRGBD
+    NRGBD_DIR: data/nrgbd
+    load_img_size: ${load_img_size}
+    cache_file: data/dataset_cache/nrgbd_mv_recon_cache.npy
+  sampling:
+    strategy: all
+  seq_id_map: datasets/seq-id-maps/NRGBD_mv-recon_seq-id-map-all.json
+
+Waymo:
+  cfg:
+    _target_: datasets.waymo.Waymo
+    WAYMO_DIR: data/waymo
+    seq_list: [
+      '16345319168590318167_1420_000_1440_000', '183829460855609442_430_000_450_000', '3156155872654629090_2474_780_2494_780', 
+      '3461811179177118163_1161_000_1181_000', '3711598698808133144_2060_000_2080_000', '4058410353286511411_3980_000_4000_000',
+      '4604173119409817302_2820_000_2840_000', '5200186706748209867_80_000_100_000', '6104545334635651714_2780_000_2800_000'
+        ]

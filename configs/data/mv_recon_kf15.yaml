@@ -1,0 +1,22 @@
+7scenes-kf15:
+  cfg:
+    _target_: datasets.sevenscenes.SevenScenes
+    split: test
+    SEVENSCENES_DIR: data/7scenes
+    load_img_size: ${load_img_size}
+    cache_file: data/dataset_cache/7scenes_mv_recon_cache.npy
+  sampling:
+    strategy: stride
+    kf_every: 15
+  seq_id_map: datasets/seq-id-maps/7scenes_mv-recon_seq-id-map-kf15.json
+
+NRGBD-kf15:
+  cfg:
+    _target_: datasets.nrgbd.NRGBD
+    NRGBD_DIR: data/nrgbd
+    load_img_size: ${load_img_size}
+    cache_file: data/dataset_cache/nrgbd_mv_recon_cache.npy
+  sampling:
+    strategy: stride
+    kf_every: 15  # our dense setting
+  seq_id_map: datasets/seq-id-maps/NRGBD_mv-recon_seq-id-map-kf15.json
