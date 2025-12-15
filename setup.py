@@ -3,7 +3,7 @@ from Cython.Build import cythonize
 
 setup(
     ext_modules = cythonize(
-        "**/*.pyx",
+        "inference_engine/utils/*.pyx",
         compiler_directives={'language_level': "3"}
     ),
 )

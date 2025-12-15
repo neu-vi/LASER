@@ -13,28 +13,22 @@
 <sup>*</sup> Equal Contribution
 </div>
 
----
-
 ## 📢 Updates
 * **[2025-12-15]** ArXiv preprint released.
-
----
 
 ## 📝 To-Do List
 
 - [x] Release framework codebase
 - [x] Release inference code
+- [ ] Add data preparation instruction
 - [x] Release evaluation code
 - [ ] Add Viser integration
-
----
+- [ ] Release loop-closure demo
 
 ## 💡 Abstract
 We propose LASER, a training-free framework that converts an offline reconstruction model into a streaming system by aligning predictions across consecutive temporal windows. 
 We observe that simple similarity transformation ($\mathrm{Sim}(3)$) alignment fails due to layer depth misalignment: monocular scale ambiguity causes relative depth scales of different scene layers to vary inconsistently between windows. 
 To address this, we introduce layer-wise scale alignment, which segments depth predictions into discrete layers, computes per-layer scale factors, and propagates them across both adjacent windows and timestamps.
-
----
 
 ## 🛠️ Installation
 
@@ -54,7 +48,11 @@ pip install -r requirements.txt
 python setup.py build_ext --inplace
 ```
 
----
+(Optional) Download checkpoints needed for loop-closure inference
+
+```bash
+bash ./scripts/download_weights.sh
+```
 
 ## 🚀 Usage
 
@@ -73,8 +71,7 @@ python demo.py \
 ```
 
 ## Evaluation
-Put all datasets in `data/` OR
-change dataset paths within `eval/eval_meta.py` accordingly.
+Put all datasets in `data/`.
 
 ### Video Depth
 
@@ -180,5 +177,25 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 
 ### MV Recon
 ```bash
+export PYTHONPATH="./":$PYTHONPATH
 python mv_recon/eval.py
 ```
+
+## Citation
+If you find this repository useful in your research, please consider giving a star ⭐ and a citation
+```bibtex
+@article{ding2025laser,
+  title={LASER: Layer-wise Scale Alignment for Training-Free Streaming 4D Reconstruction},
+  author={Ding, Tianye and Xie, Yiming and Liang, Yiqing and Chatterjee, Moitreya and Miraldo, Pedro and Jiang, Huaizu},
+  year={2025}
+}
+```
+
+## Acknowledgements
+We would like to thank the authors for the following excellent open source projects:
+[VGGT](https://github.com/facebookresearch/vggt/tree/main), 
+[$\pi^3$](https://github.com/yyfz/Pi3),
+[MonST3R](https://github.com/Junyi42/monst3r),
+[CUT3R](https://github.com/CUT3R/CUT3R),
+[VGGT-Long](https://github.com/DengKaiCQ/VGGT-Long/tree/main)
+and many other inspiring works in the community.

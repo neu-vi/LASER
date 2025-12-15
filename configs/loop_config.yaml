@@ -1,8 +1,6 @@
 Weights:
-  VGGT: '/projects/vig/tianyed/4d-recon/VGGT-Long/weights/model.pt'
-  DBoW: '/projects/vig/tianyed/4d-recon/VGGT-Long/weights/ORBvoc.txt'
-  SALAD: '/projects/vig/tianyed/4d-recon/VGGT-Long/weights/dino_salad.ckpt'
-  DNIO: '/projects/vig/tianyed/4d-recon/VGGT-Long/weights/dinov2_vitb14_pretrain.pth'
+  SALAD: 'weights/dino_salad.ckpt'
+  DINO: 'weights/dinov2_vitb14_pretrain.pth'
 
 Model:
   chunk_size: 60

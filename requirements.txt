@@ -6,8 +6,14 @@ huggingface_hub
 einops
 safetensors
 Cython
+hydra-core
+colorlog
 tqdm
 opencv-python
 scipy
+scikit-image
 trimesh
 evo
+open3d
+pypose
+numba
