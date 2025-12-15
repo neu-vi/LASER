@@ -22,7 +22,7 @@
 - [x] Release inference code
 - [ ] Add data preparation instruction
 - [x] Release evaluation code
-- [ ] Add Viser integration
+- [x] Add Viser integration
 - [ ] Release loop-closure demo
 
 ## 💡 Abstract
@@ -46,6 +46,9 @@ pip install -r requirements.txt
 
 # 4. Compile cython modules
 python setup.py build_ext --inplace
+
+# 5. Install Viser
+pip install -e viser
 ```
 
 (Optional) Download checkpoints needed for loop-closure inference
@@ -56,7 +59,8 @@ bash ./scripts/download_weights.sh
 
 ## 🚀 Usage
 
-### Demo
+### Inference
+To run the inference code, you can use the following command:
 ```bash
 export PYTHONPATH="./":$PYTHONPATH
 
@@ -68,6 +72,13 @@ python demo.py \
 --window_size WINDOW_SIZE \
 --overlap OVERLAP \
 --depth_refine
+```
+The results will be saved in the `viser_results/SEQ_NAME`directory for future visualization.
+
+### Visualization
+To visualize the interactive 4D results, you can use the following command:
+```bash
+python viser/visualizer_monst3r.py --data viser_results/SEQ_NAME
 ```
 
 ## Evaluation

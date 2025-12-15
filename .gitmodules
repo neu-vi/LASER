@@ -1,0 +1,3 @@
+[submodule "viser"]
+	path = viser
+	url = https://github.com/Junyi42/viser.git

@@ -152,5 +152,3 @@ results/
 # pixi environments
 .pixi
 *.egg-info
-tmp_data/
-viser/
