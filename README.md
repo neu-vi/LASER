@@ -20,7 +20,7 @@
 
 - [x] Release framework codebase
 - [x] Release inference code
-- [ ] Add data preparation instruction
+- [x] Add data preparation instruction
 - [x] Release evaluation code
 - [x] Add Viser integration
 - [ ] Release loop-closure demo
@@ -82,6 +82,8 @@ python viser/visualizer_monst3r.py --data viser_results/SEQ_NAME
 ```
 
 ## Evaluation
+Please refer to [MonST3R](https://github.com/Junyi42/monst3r/blob/main/data/prepare_training.md#dataset-setup) for dataset setup details.
+
 Put all datasets in `data/`.
 
 ### Video Depth
@@ -174,7 +176,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 --eval_dataset=tum \
 --output_dir="outputs/cam_pose/tum_pose"
 ```
-
+<!-- 
 KITTI Odometry
 ```bash
 export PYTHONPATH="./":$PYTHONPATH
@@ -190,7 +192,7 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_laun
 ```bash
 export PYTHONPATH="./":$PYTHONPATH
 python mv_recon/eval.py
-```
+``` -->
 
 ## Citation
 If you find this repository useful in your research, please consider giving a star ⭐ and a citation
