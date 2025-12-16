@@ -91,7 +91,7 @@ def run_model(image_names, scene_name, output_path):
 
 def run_dynamic_scene(args):
     data_path = args.data_path
-    scene_name = data_path.split('/')[-2] if not args.scene_name else args.scene_name
+    scene_name = data_path.split('/')[-1] if not args.scene_name else args.scene_name
 
     img_names = os.listdir(data_path)
     img_names = [os.path.join(data_path, name) for name in img_names if name.endswith(('.png', '.jpg', '.jpeg'))][

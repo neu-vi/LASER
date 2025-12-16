@@ -1,6 +1,6 @@
 <div align="center">
 <h1>LASER: Layer-wise Scale Alignment for Training-Free Streaming 4D Reconstruction</h1>
-<a href="https://arxiv.org/abs/xxxx.xxxxx"><img src="https://img.shields.io/badge/arXiv-xxxx.xxxxx-b31b1b" alt="arXiv"></a>
+<a href="http://arxiv.org/abs/2512.13680"><img src="https://img.shields.io/badge/arXiv-2512.13680-b31b1b" alt="arXiv"></a>
 <a href="https://neu-vi.github.io/LASER/"><img src="https://img.shields.io/badge/Project-Website-orange" alt="Project Page"></a>
 
 [Tianye Ding<sup>1*</sup>](https://jerrygcding.github.io/), 
@@ -27,7 +27,7 @@
 
 ## 💡 Abstract
 We propose LASER, a training-free framework that converts an offline reconstruction model into a streaming system by aligning predictions across consecutive temporal windows. 
-We observe that simple similarity transformation ($\mathrm{Sim}(3)$) alignment fails due to layer depth misalignment: monocular scale ambiguity causes relative depth scales of different scene layers to vary inconsistently between windows. 
+We observe that simple similarity transformation (Sim(3)) alignment fails due to layer depth misalignment: monocular scale ambiguity causes relative depth scales of different scene layers to vary inconsistently between windows. 
 To address this, we introduce layer-wise scale alignment, which segments depth predictions into discrete layers, computes per-layer scale factors, and propagates them across both adjacent windows and timestamps.
 
 ## 🛠️ Installation
@@ -72,6 +72,16 @@ python demo.py \
 --window_size WINDOW_SIZE \
 --overlap OVERLAP \
 --depth_refine
+
+# example inference script
+python demo.py \
+--data_path "examples/titanic" \
+--output_path "./viser_results" \
+--cache_path "./cache" \
+--sample_interval 1 \
+--window_size 30 \
+--overlap 10 \
+--depth_refine
 ```
 The results will be saved in the `viser_results/SEQ_NAME`directory for future visualization.
 
@@ -79,6 +89,9 @@ The results will be saved in the `viser_results/SEQ_NAME`directory for future vi
 To visualize the interactive 4D results, you can use the following command:
 ```bash
 python viser/visualizer_monst3r.py --data viser_results/SEQ_NAME
+
+# example visualization script
+python viser/visualizer_monst3r.py --data viser_results/titanic
 ```
 
 ## Evaluation
@@ -207,7 +220,7 @@ If you find this repository useful in your research, please consider giving a st
 ## Acknowledgements
 We would like to thank the authors for the following excellent open source projects:
 [VGGT](https://github.com/facebookresearch/vggt/tree/main), 
-[$\pi^3$](https://github.com/yyfz/Pi3),
+[&pi;<sup>3</sup>](https://github.com/yyfz/Pi3),
 [MonST3R](https://github.com/Junyi42/monst3r),
 [CUT3R](https://github.com/CUT3R/CUT3R),
 [VGGT-Long](https://github.com/DengKaiCQ/VGGT-Long/tree/main)

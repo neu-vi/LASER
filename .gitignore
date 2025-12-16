@@ -145,7 +145,6 @@ dmypy.json
 skyseg.onnx
 
 output/
-examples/
 output_dy/
 results/
 .idea/
