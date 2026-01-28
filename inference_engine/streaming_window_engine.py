@@ -10,6 +10,7 @@ import tempfile
 import shutil
 import glob
 from collections import defaultdict
+import time
 
 from .sliding_window_engine import SlidingWindowEngine
 from .inference_utils import (
@@ -38,7 +39,8 @@ class StreamingWindowEngine(SlidingWindowEngine):
             window_size: int = 20,
             overlap: int = 5,
             depth_refine=True,
-            cache_root: str = './cache'
+            cache_root: str = './cache',
+            benchmark_latency=True
     ):
         super().__init__(
             delegate=delegate.to(inference_device),
@@ -65,6 +67,10 @@ class StreamingWindowEngine(SlidingWindowEngine):
         self._registration_thread = None
 
         self.running = False
+
+        self.benchmark_latency = benchmark_latency
+        self.latencies = []
+        self.warmup_steps = 2
 
     def set_cache_dir(self, cache_dir):
         if self.running:
@@ -97,19 +103,24 @@ class StreamingWindowEngine(SlidingWindowEngine):
         self._inference_thread = None
         self._registration_thread = None
 
+        self.latencies = []
+
         gc.collect()
 
     @torch.no_grad()
     def _model_inference_worker(self):
         while True:
-            sample_window = self.inference_queue.get()
-            if sample_window is STOP_SIGNAL:
+            item = self.inference_queue.get()
+            if item is STOP_SIGNAL:
                 return
+
+            sample_window, start_time = item
 
             with torch.autocast(self.inference_device, dtype=self.dtype):
                 prediction_window = self.delegate(sample_window)
 
-            self.registration_queue.put(dict_to_device(prediction_window, self.process_device))
+            processed_data = dict_to_device(prediction_window, self.process_device)
+            self.registration_queue.put((processed_data, start_time))
             if self.inference_device == 'cuda':
                 torch.cuda.empty_cache()
 
@@ -118,9 +129,11 @@ class StreamingWindowEngine(SlidingWindowEngine):
         tgt_sp_graph = None
 
         while True:
-            working_window = self.registration_queue.get()
-            if working_window is STOP_SIGNAL:
+            item = self.registration_queue.get()
+            if item is STOP_SIGNAL:
                 return
+
+            working_window, start_time = item
 
             for key in working_window.keys():
                 if isinstance(working_window[key], torch.Tensor):
@@ -185,6 +198,10 @@ class StreamingWindowEngine(SlidingWindowEngine):
             self._update_cache(working_window, tgt_sp_graph)
             self._save_cache()
 
+            end_time = time.perf_counter()
+            latency = end_time - start_time
+            self.latencies.append(latency)
+
     def begin(self):
         if self.running:
             raise RuntimeError('Cannot start a running inference engine')
@@ -198,7 +215,7 @@ class StreamingWindowEngine(SlidingWindowEngine):
         self.running = True
 
     def forward(self, sample, **kwargs):
-        self.inference_queue.put(sample)
+        self.inference_queue.put((sample, time.perf_counter()))
 
     def end(self):
         if not self.running:
@@ -208,6 +225,28 @@ class StreamingWindowEngine(SlidingWindowEngine):
         self._inference_thread.join()
         self.registration_queue.put(STOP_SIGNAL)
         self._registration_thread.join()
+
+        if self.benchmark_latency:
+            if self.latencies:
+                print("\n" + "=" * 50)
+                print("        INFERENCE PERFORMANCE SUMMARY        ")
+                print("=" * 50)
+
+                # Print list of all times
+                latencies_ms = [t * 1000 for t in self.latencies]
+                print(f"Raw Latencies (ms): {latencies_ms}")
+
+                if len(self.latencies) > self.warmup_steps:
+                    steady_times = self.latencies[self.warmup_steps:-1]
+                    avg_steady = sum(steady_times) / len(steady_times)
+                    print("-" * 50)
+                    print(f"Total Windows:     {len(self.latencies)}")
+                    print(f"Warmup Windows:    {self.warmup_steps}")
+                    print(f"Steady State Avg:  {avg_steady * 1000:.2f} ms")
+                else:
+                    avg_all = sum(self.latencies) / len(self.latencies)
+                    print(f"Average (All):     {avg_all * 1000:.2f} ms")
+                print("=" * 50 + "\n")
 
         self._reset_state()
         self.running = False
