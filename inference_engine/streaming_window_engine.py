@@ -110,17 +110,19 @@ class StreamingWindowEngine(SlidingWindowEngine):
     @torch.no_grad()
     def _model_inference_worker(self):
         while True:
-            item = self.inference_queue.get()
-            if item is STOP_SIGNAL:
+            sample_window = self.inference_queue.get()
+            if sample_window is STOP_SIGNAL:
                 return
 
-            sample_window, start_time = item
+            t_start = time.perf_counter()
 
             with torch.autocast(self.inference_device, dtype=self.dtype):
                 prediction_window = self.delegate(sample_window)
 
-            processed_data = dict_to_device(prediction_window, self.process_device)
-            self.registration_queue.put((processed_data, start_time))
+            inference_duration = time.perf_counter() - t_start
+
+            processed_window = dict_to_device(prediction_window, self.process_device)
+            self.registration_queue.put((processed_window, inference_duration))
             if self.inference_device == 'cuda':
                 torch.cuda.empty_cache()
 
@@ -133,7 +135,8 @@ class StreamingWindowEngine(SlidingWindowEngine):
             if item is STOP_SIGNAL:
                 return
 
-            working_window, start_time = item
+            working_window, inference_duration = item
+            t_start = time.perf_counter()
 
             for key in working_window.keys():
                 if isinstance(working_window[key], torch.Tensor):
@@ -198,9 +201,9 @@ class StreamingWindowEngine(SlidingWindowEngine):
             self._update_cache(working_window, tgt_sp_graph)
             self._save_cache()
 
-            end_time = time.perf_counter()
-            latency = end_time - start_time
-            self.latencies.append(latency)
+            reg_duration = time.perf_counter() - t_start
+            total_process_time = inference_duration + reg_duration
+            self.latencies.append(total_process_time)
 
     def begin(self):
         if self.running:
@@ -215,7 +218,7 @@ class StreamingWindowEngine(SlidingWindowEngine):
         self.running = True
 
     def forward(self, sample, **kwargs):
-        self.inference_queue.put((sample, time.perf_counter()))
+        self.inference_queue.put(sample)
 
     def end(self):
         if not self.running:
