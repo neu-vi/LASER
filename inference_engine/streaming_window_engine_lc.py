@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 
 from collections import defaultdict
+import time
 
 from .streaming_window_engine import StreamingWindowEngine, STOP_SIGNAL
 from .inference_utils import (
@@ -48,9 +49,12 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
         tgt_sp_graph = None
 
         while True:
-            working_window = self.registration_queue.get()
-            if working_window is STOP_SIGNAL:
+            item = self.registration_queue.get()
+            if item is STOP_SIGNAL:
                 return
+
+            working_window, inference_duration = item
+            t_start = time.perf_counter()
 
             for key in working_window.keys():
                 if isinstance(working_window[key], torch.Tensor):
@@ -120,6 +124,10 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
 
             self._update_cache(working_window, tgt_sp_graph)
             self._save_cache()
+
+            reg_duration = time.perf_counter() - t_start
+            total_process_time = inference_duration + reg_duration
+            self.latencies.append(total_process_time)
 
     @staticmethod
     def aggregate_caches(parsed_caches):
