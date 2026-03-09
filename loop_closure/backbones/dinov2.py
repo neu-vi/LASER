@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+from pi3.models.dinov2.hub import backbones
+
 DINOV2_ARCHS = {
     'dinov2_vits14': 384,
     'dinov2_vitb14': 768,
@@ -34,9 +36,9 @@ class DINOv2(nn.Module):
         assert model_name in DINOV2_ARCHS.keys(), f'Unknown model name {model_name}'
         # self.model = torch.hub.load('facebookresearch/dinov2', model_name)
         # self.model = torch.hub.load('facebookresearch/dinov2', model_name, pretrained=False)
-        self.model = torch.hub.load('/projects/vig/tianyed/4d-recon/VGGT-Long/LoopModels/dinov2',
-                                    model_name, source='local', pretrained=False)
-        self.model.load_state_dict(torch.load(vggt_long_config['Weights']['DNIO']))
+        dinov2 = getattr(backbones, model_name)
+        self.model = dinov2(pretrained=False)
+        self.model.load_state_dict(torch.load(vggt_long_config['Weights']['DINO']))
         self.num_channels = DINOV2_ARCHS[model_name]
         self.num_trainable_blocks = num_trainable_blocks
         self.norm_layer = norm_layer
