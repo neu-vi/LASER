@@ -7,7 +7,7 @@ from scipy import ndimage
 
 # Cython DSU implementation
 cdef class DSU:
-    cdef cnp.ndarray parent   # numpy array of int64
+    cdef object parent   # numpy array of int64
     cdef long[:] parent_view  # memoryview for fast access
 
     def __init__(self, int n):
@@ -28,9 +28,7 @@ cdef class DSU:
             self.parent_view[rb] = ra
 
 
-def merge_regions(cnp.ndarray[cnp.int64_t, ndim=2] labels,
-                  cnp.ndarray[cnp.float32_t, ndim=2] depth,
-                  float threshold):
+def merge_regions(labels, depth, float threshold):
     """
     Merge adjacent regions in segmentation based on depth similarity.
 
@@ -38,7 +36,7 @@ def merge_regions(cnp.ndarray[cnp.int64_t, ndim=2] labels,
     depth:  (H, W) depth map (float32)
     threshold: merging threshold (float)
     """
-    cdef cnp.ndarray[cnp.int64_t] unique_labels = np.unique(labels)
+    unique_labels = np.unique(labels)
     cdef int n_regions = unique_labels.shape[0]
 
     # Map original labels -> compact indices
