@@ -1,4 +1,5 @@
 # distutils: language=c++
+# distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 # cython: boundscheck=False, wraparound=False, initializedcheck=False, cdivision=True
 
 import numpy as np

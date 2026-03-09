@@ -54,6 +54,7 @@ class LoopClosureEngine:
             pi3_model,
             window_size,
             overlap,
+            sample_interval=1,
             top_conf_percentile=0.5
     ):
         self.config = config
@@ -65,9 +66,11 @@ class LoopClosureEngine:
 
         self.img_dir = image_dir
         self.img_list = None
+        self.sample_interval = sample_interval
 
         self.loop_detector = LoopDetector(
             image_dir=image_dir,
+            sample_interval=sample_interval,
             output=output_dir,
             config=config
         )
@@ -187,7 +190,7 @@ class LoopClosureEngine:
     def run(self, raw_predictions):
         print(f"Loading images from {self.img_dir}...")
         self.img_list = sorted(glob.glob(os.path.join(self.img_dir, "*.jpg")) +
-                               glob.glob(os.path.join(self.img_dir, "*.png")))
+                               glob.glob(os.path.join(self.img_dir, "*.png")))[::self.sample_interval]
 
         if len(self.img_list) == 0:
             raise ValueError(f"[DIR EMPTY] No images found in {self.img_dir}!")

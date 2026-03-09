@@ -13,23 +13,19 @@ class LoopDetector:
 
     def __init__(self,
                  image_dir,
+                 sample_interval=1,
                  output="loop_closures.txt",
                  config=None):
         """Initialize the loop detector
         
         Args:
             image_dir: Directory path containing images
-            ckpt_path: Model checkpoint path
-            image_size: Image resize dimensions [height width]
-            batch_size: Batch size for processing
-            similarity_threshold: Similarity threshold for loop closure
-            top_k: Number of nearest neighbors to check for each image
-            use_nms: Whether to use Non-Maximum Suppression (NMS) filtering
-            nms_threshold: NMS threshold for minimum frame difference between loop pairs
+            sample_interval
             output: Output file path
         """
         self.config = config
         self.image_dir = image_dir
+        self.sample_interval = sample_interval
         self.ckpt_path = self.config['Weights']['SALAD']
         self.image_size = self.config['Loop']['SALAD']['image_size']
         self.batch_size = self.config['Loop']['SALAD']['batch_size']
@@ -99,7 +95,7 @@ class LoopDetector:
             image_paths.extend(list(Path(self.image_dir).glob(f"*{ext}")))
             image_paths.extend(list(Path(self.image_dir).glob(f"*{ext.upper()}")))
 
-        image_paths = sorted(image_paths)
+        image_paths = sorted(image_paths)[::self.sample_interval]
         self.image_paths = image_paths
         return image_paths
 

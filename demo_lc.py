@@ -138,6 +138,7 @@ if __name__ == "__main__":
         pi3_model,
         args.window_size,
         args.overlap,
+        args.sample_interval
     )
 
     cache_files = sorted(glob.glob(str(model.temp_cache_dir / 'window_cache_*.pt')),
