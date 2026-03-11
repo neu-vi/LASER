@@ -3,6 +3,7 @@ import numpy as np
 from skimage.segmentation import felzenszwalb
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from .fast_seg import fast_graph_segmentation
 from ._segmentation_cy import merge_regions
 from pi3.utils.graph import Vertex
 
@@ -55,6 +56,13 @@ def segment_depth_felzenszwalb_rag(
     # seg_mask_merged = graph.cut_threshold(seg_mask, rag, merge_thresh)
     seg_mask_merged = merge_regions(seg_mask, depth_map, merge_thresh)
     return seg_mask_merged
+
+
+def segment_depth_graph_fast(
+        depth_map,
+        merge_thresh
+):
+    return fast_graph_segmentation(depth_map, merge_thresh)
 
 
 def pairwise_intersection_ratio(mask1, mask2):
