@@ -61,9 +61,9 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
                     working_window[key] = working_window[key].squeeze(0)
 
             # camera pose registration
-            conf_thre = torch.quantile(working_window['conf'], self.top_conf_percentile, interpolation='nearest')
-            tgt_mask_window = working_window['conf'] >= conf_thre
-            working_window['mask'] = tgt_mask_window
+            conf_thresh = torch.quantile(working_window['conf'][:self.overlap], self.top_conf_percentile,
+                                         interpolation='nearest')
+            tgt_mask = working_window['conf'][:self.overlap] >= conf_thresh
 
             if self.prev_window_cache is not None:
                 # fixed intrinsic enforce
@@ -72,7 +72,9 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
                     ref_intrinsic
                 )
                 # mutual conf mask
-                conf_mask = self.prev_window_cache['mask'][-self.overlap:] | tgt_mask_window[:self.overlap]
+                prev_conf_thresh = torch.quantile(self.prev_window_cache['conf'][:self.overlap],
+                                                  self.top_conf_percentile, interpolation='nearest')
+                conf_mask = (self.prev_window_cache['conf'][:self.overlap] >= prev_conf_thresh) & tgt_mask
 
                 # metric depth align
                 prev_local_points = self.prev_window_cache['local_points'][-self.overlap:]
@@ -94,7 +96,8 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
                     tgt_pcd = working_window['local_points'].cpu().numpy()
                     tgt_sp_graph = make_sp_graph(
                         tgt_pcd[..., -1],
-                        tgt_mask_window.cpu().numpy()
+                        conf_map=working_window['conf'].cpu().numpy(),
+                        top_conf_percentile=self.top_conf_percentile
                     )
                     working_window['scale_mask'] = refine_depth_segments(
                         self.prev_window_cache['local_points'].cpu().numpy(),
@@ -119,7 +122,8 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
                 if self.depth_refine:
                     tgt_sp_graph = make_sp_graph(
                         working_window['local_points'][..., -1].cpu().numpy(),
-                        tgt_mask_window.cpu().numpy()
+                        conf_map=working_window['conf'].cpu().numpy(),
+                        top_conf_percentile=self.top_conf_percentile
                     )
 
             self._update_cache(working_window, tgt_sp_graph)

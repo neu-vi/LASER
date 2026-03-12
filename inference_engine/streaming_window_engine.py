@@ -12,7 +12,7 @@ import glob
 from collections import defaultdict
 import time
 
-from .sliding_window_engine import SlidingWindowEngine
+from . import VanillaEngine
 from .inference_utils import (
     dict_to_device,
     register_adjacent_windows,
@@ -29,12 +29,13 @@ from .utils.geometry import homogenize_points
 STOP_SIGNAL = object()
 
 
-class StreamingWindowEngine(SlidingWindowEngine):
+class StreamingWindowEngine(VanillaEngine):
     def __init__(
             self,
             delegate: nn.Module,
             inference_device: str,
             dtype: torch.dtype,
+            intermediate_device: str = 'cuda',
             process_device: str = 'cpu',
             top_conf_percentile: float = 0.5,
             window_size: int = 20,
@@ -44,11 +45,13 @@ class StreamingWindowEngine(SlidingWindowEngine):
             benchmark_latency=True
     ):
         super().__init__(
-            delegate=delegate.to(inference_device),
-            top_conf_percentile=top_conf_percentile,
-            window_size=window_size,
-            overlap=overlap
+            delegate=delegate.to(inference_device)
         )
+        self.window_size = window_size
+        self.overlap = overlap
+        self.intermediate_device = intermediate_device
+        self.top_conf_percentile = 1 - top_conf_percentile if top_conf_percentile is not None else 0.0
+
         self.inference_device = inference_device
         self.process_device = process_device
         self.dtype = dtype
