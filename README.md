@@ -100,7 +100,6 @@ python demo_lc.py \
     --sample_interval SAMPLE_INTERVAL \
     --window_size WINDOW_SIZE \
     --overlap OVERLAP
-    # --depth_refine
 
 rm -r cache/
 ```
