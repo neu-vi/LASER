@@ -178,7 +178,8 @@ class StreamingWindowEngine(SlidingWindowEngine):
                     tgt_pcd = working_window['local_points'].cpu().numpy()
                     tgt_sp_graph = make_sp_graph(
                         tgt_pcd[..., -1],
-                        tgt_mask_window.cpu().numpy()
+                        conf_map=working_window['conf'].cpu().numpy(),
+                        top_conf_percentile=self.top_conf_percentile
                     )
                     working_window['local_points'] = working_window['local_points'] * refine_depth_segments(
                         self.prev_window_cache['local_points'].cpu().numpy(),
@@ -198,7 +199,8 @@ class StreamingWindowEngine(SlidingWindowEngine):
                 if self.depth_refine:
                     tgt_sp_graph = make_sp_graph(
                         working_window['local_points'][..., -1].cpu().numpy(),
-                        tgt_mask_window.cpu().numpy()
+                        conf_map=working_window['conf'].cpu().numpy(),
+                        top_conf_percentile=self.top_conf_percentile
                     )
 
             self._update_cache(working_window, tgt_sp_graph)

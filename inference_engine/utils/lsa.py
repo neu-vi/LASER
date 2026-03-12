@@ -39,15 +39,21 @@ def refine_depth_segments(
 
 def make_sp_graph(
         depth,
-        conf_mask=None,
         depth_merge_thresh=0.1,
+        conf_map=None,
+        top_conf_percentile=None,
         corr_iou_thresh=0.3
 ):
-    conf_mask = conf_mask if conf_mask is not None else np.ones_like(depth, dtype=bool)
-    conf_depth = depth[conf_mask]
-    merge_thresh = depth_merge_thresh * (np.max(conf_depth) - np.min(conf_depth))
-    # labels = [segment_depth_felzenszwalb_rag(d, merge_thresh) for d in depth]
-    labels = batched_image_op_wrapper(depth, segment_depth_felzenszwalb_rag, merge_thresh=merge_thresh)
+    # conf_mask = conf_mask if conf_mask is not None else np.ones_like(depth, dtype=bool)
+    # conf_depth = depth[conf_mask]
+    # merge_thresh = depth_merge_thresh * (np.max(conf_depth) - np.min(conf_depth))
+    labels = batched_image_op_wrapper(
+        depth,
+        segment_depth_felzenszwalb_rag,
+        depth_merge_thresh=depth_merge_thresh,
+        conf_map=conf_map,
+        top_conf_percentile=top_conf_percentile
+    )
     sp_graph = match_segmentation_seq(labels, iou_thresh=corr_iou_thresh)
 
     return sp_graph
