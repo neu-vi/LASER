@@ -144,9 +144,9 @@ class StreamingWindowEngine(SlidingWindowEngine):
                     working_window[key] = working_window[key].squeeze(0)
 
             # camera pose registration
-            conf_thre = torch.quantile(working_window['conf'], self.top_conf_percentile, interpolation='nearest')
-            tgt_mask_window = working_window['conf'] >= conf_thre
-            working_window['mask'] = tgt_mask_window
+            conf_thresh = torch.quantile(working_window['conf'][:self.overlap], self.top_conf_percentile,
+                                         interpolation='nearest')
+            tgt_mask = working_window['conf'][:self.overlap] >= conf_thresh
 
             if self.prev_window_cache is not None:
                 # fixed intrinsic enforce
@@ -155,7 +155,9 @@ class StreamingWindowEngine(SlidingWindowEngine):
                     ref_intrinsic
                 )
                 # mutual conf mask
-                conf_mask = self.prev_window_cache['mask'][-self.overlap:] | tgt_mask_window[:self.overlap]
+                prev_conf_thresh = torch.quantile(self.prev_window_cache['conf'][:self.overlap],
+                                                  self.top_conf_percentile, interpolation='nearest')
+                conf_mask = (self.prev_window_cache['conf'][:self.overlap] >= prev_conf_thresh) & tgt_mask
 
                 # metric depth align
                 prev_local_points = self.prev_window_cache['local_points'][-self.overlap:]
