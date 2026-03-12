@@ -67,6 +67,7 @@ def run_model(image_names, scene_name, output_path):
         model(imgs)
     model.end()
     end_ev.record()
+    duration = start_ev.elapsed_time(end_ev)
 
     save_dict = model.parse_inference_cache_summary()
     for key in save_dict.keys():
@@ -76,7 +77,6 @@ def run_model(image_names, scene_name, output_path):
     save_for_viser(save_dict, scene_name, output_path, inverse_extrinsic=False)
 
     torch.cuda.synchronize()  # make sure the event timestamps are set
-    duration = start_ev.elapsed_time(end_ev)
     gpu_mem_usage = torch.cuda.max_memory_allocated()
 
     summary_text = f"""
