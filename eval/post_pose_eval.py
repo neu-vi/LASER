@@ -59,14 +59,10 @@ def eval_pose_estimation_dist(args, pose_dir, save_dir=None, inverse_extrinsic=T
     # load_img_size = 512
 
     error_log_path = f'{save_dir}/_error_log_{rank}.txt'  # Unique log file per process
-    bug = False
 
     for seq in tqdm(seq_list):
         try:
-            dir_path = metadata['dir_path_func'](img_path, seq)
-            save_id = f"{'_'.join(dir_path.split('/'))}_"
-
-            pred_traj = load_traj(os.path.join(pose_dir, save_id, 'camera_poses.txt'), traj_format='replica')
+            pred_traj = load_traj(os.path.join(pose_dir, seq, 'camera_poses.txt'), traj_format='replica')
             if inverse_extrinsic:
                 pred_traj = closed_form_inverse_se3(pred_traj)  # shape (S, 4, 4) typically
                 # For convenience, we store only (3,4) portion, cam_to_world
