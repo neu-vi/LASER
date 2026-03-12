@@ -23,7 +23,7 @@
 - [x] Add data preparation instruction
 - [x] Release evaluation code
 - [x] Add Viser integration
-- [ ] Release loop-closure demo
+- [x] Release loop-closure demo
 
 ## 💡 Abstract
 We propose LASER, a training-free framework that converts an offline reconstruction model into a streaming system by aligning predictions across consecutive temporal windows. 
@@ -65,25 +65,45 @@ To run the inference code, you can use the following command:
 export PYTHONPATH="./":$PYTHONPATH
 
 python demo.py \
---data_path DATA_PATH \
---output_path "./viser_results" \
---cache_path "./cache" \
---sample_interval SAMPLE_INTERVAL \
---window_size WINDOW_SIZE \
---overlap OVERLAP \
---depth_refine
+    --data_path DATA_PATH \
+    --output_path "./viser_results" \
+    --cache_path "./cache" \
+    --sample_interval SAMPLE_INTERVAL \
+    --window_size WINDOW_SIZE \
+    --overlap OVERLAP \
+    --depth_refine
 
 # example inference script
 python demo.py \
---data_path "examples/titanic" \
---output_path "./viser_results" \
---cache_path "./cache" \
---sample_interval 1 \
---window_size 30 \
---overlap 10 \
---depth_refine
+    --data_path "examples/titanic" \
+    --output_path "./viser_results" \
+    --cache_path "./cache" \
+    --sample_interval 1 \
+    --window_size 30 \
+    --overlap 10 \
+    --depth_refine
 ```
 The results will be saved in the `viser_results/SEQ_NAME`directory for future visualization.
+
+### Loop-closure inference
+Loop-closure requires additional dependencies for package `faiss` can be installed through:
+```bash
+pip install faiss-gpu-cu12 numpy==1.26.4
+```
+Run loop-closure inference for kilometer-scale sequence with the following command:
+```bash
+python demo_lc.py \
+    --config_path "configs/loop_config.yaml" \
+    --data_path DATA_PATH \
+    --output_path "./viser_results" \
+    --cache_path "./cache" \
+    --sample_interval SAMPLE_INTERVAL \
+    --window_size WINDOW_SIZE \
+    --overlap OVERLAP
+    # --depth_refine
+
+rm -r cache/
+```
 
 ### Visualization
 To visualize the interactive 4D results, you can use the following command:
@@ -106,17 +126,17 @@ Sintel
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
---mode=eval_pose \
---model=streaming_pi3 \
---eval_dataset=sintel \
---output_dir="outputs/video_depth/sintel_depth" \
---full_seq \
---no_crop
+    --mode=eval_pose \
+    --model=streaming_pi3 \
+    --eval_dataset=sintel \
+    --output_dir="outputs/video_depth/sintel_depth" \
+    --full_seq \
+    --no_crop
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_metric.py \
---eval_dataset=sintel \
---result_dir="outputs/video_depth/sintel_depth" \
---output_dir="outputs/video_depth"
+    --eval_dataset=sintel \
+    --result_dir="outputs/video_depth/sintel_depth" \
+    --output_dir="outputs/video_depth"
 ```
 
 Bonn
@@ -124,16 +144,16 @@ Bonn
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
---mode=eval_pose \
---model=streaming_pi3 \
---eval_dataset=bonn \
---output_dir="outputs/video_depth/bonn_depth" \
---no_crop
+    --mode=eval_pose \
+    --model=streaming_pi3 \
+    --eval_dataset=bonn \
+    --output_dir="outputs/video_depth/bonn_depth" \
+    --no_crop
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_metric.py \
---eval_dataset=bonn \
---result_dir="outputs/video_depth/bonn_depth" \
---output_dir="outputs/video_depth"
+    --eval_dataset=bonn \
+    --result_dir="outputs/video_depth/bonn_depth" \
+    --output_dir="outputs/video_depth"
 ```
 
 KITTI
@@ -141,18 +161,18 @@ KITTI
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
---mode=eval_pose \
---model=streaming_pi3 \
---eval_dataset=kitti \
---output_dir="outputs/video_depth/kitti_depth" \
---no_crop \
---flow_loss_weight 0 \
---translation_weight 1e-3
+    --mode=eval_pose \
+    --model=streaming_pi3 \
+    --eval_dataset=kitti \
+    --output_dir="outputs/video_depth/kitti_depth" \
+    --no_crop \
+    --flow_loss_weight 0 \
+    --translation_weight 1e-3
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 depth_metric.py \
---eval_dataset=kitti \
---result_dir="outputs/video_depth/kitti_depth" \
---output_dir="outputs/video_depth"
+    --eval_dataset=kitti \
+    --result_dir="outputs/video_depth/kitti_depth" \
+    --output_dir="outputs/video_depth"
 ```
 
 ### Camera Pose
@@ -162,10 +182,10 @@ Sintel
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
---mode=eval_pose \
---model=streaming_pi3 \
---eval_dataset=sintel \
---output_dir="outputs/cam_pose/sintel_pose"
+    --mode=eval_pose \
+    --model=streaming_pi3 \
+    --eval_dataset=sintel \
+    --output_dir="outputs/cam_pose/sintel_pose"
 ```
 
 ScanNet
@@ -173,10 +193,10 @@ ScanNet
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
---mode=eval_pose \
---model=streaming_pi3 \
---eval_dataset=scannet \
---output_dir="outputs/cam_pose/scannet_pose"
+    --mode=eval_pose \
+    --model=streaming_pi3 \
+    --eval_dataset=scannet \
+    --output_dir="outputs/cam_pose/scannet_pose"
 ```
 
 TUM
@@ -184,10 +204,10 @@ TUM
 export PYTHONPATH="./":$PYTHONPATH
 
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 --master_port=12345 eval_launch.py \
---mode=eval_pose \
---model=streaming_pi3 \
---eval_dataset=tum \
---output_dir="outputs/cam_pose/tum_pose"
+    --mode=eval_pose \
+    --model=streaming_pi3 \
+    --eval_dataset=tum \
+    --output_dir="outputs/cam_pose/tum_pose"
 ```
 <!-- 
 KITTI Odometry
