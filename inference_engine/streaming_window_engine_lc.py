@@ -72,7 +72,7 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
                     ref_intrinsic
                 )
                 # mutual conf mask
-                conf_mask = self.prev_window_cache['mask'][-self.overlap:] & tgt_mask_window[:self.overlap]
+                conf_mask = self.prev_window_cache['mask'][-self.overlap:] | tgt_mask_window[:self.overlap]
 
                 # metric depth align
                 prev_local_points = self.prev_window_cache['local_points'][-self.overlap:]

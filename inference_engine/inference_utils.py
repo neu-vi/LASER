@@ -146,7 +146,7 @@ def register_extrinsic_windows(
         )
 
     for i in range(1, len(cam_windows)):
-        valid_mask = mask_windows[i - 1][-overlap:] & mask_windows[i][:overlap]
+        valid_mask = mask_windows[i - 1][-overlap:] | mask_windows[i][:overlap]
         tgt_pcd = pcd_windows[i]
 
         tgt_cam_pose = cam_windows[i]
