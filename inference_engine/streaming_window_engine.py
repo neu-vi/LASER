@@ -239,7 +239,7 @@ class StreamingWindowEngine(SlidingWindowEngine):
                 latencies_ms = [t * 1000 for t in self.latencies]
                 print(f"Raw Latencies (ms): {latencies_ms}")
 
-                if len(self.latencies) > self.warmup_steps:
+                if len(self.latencies) > self.warmup_steps + 1:
                     steady_times = self.latencies[self.warmup_steps:-1]
                     avg_steady = sum(steady_times) / len(steady_times)
                     print("-" * 50)

@@ -11,11 +11,9 @@ cdef int find(int* parent, int i) nogil:
     cdef int curr = i
     cdef int nxt
 
-    # Find the root
     while parent[root] != root:
         root = parent[root]
 
-    # Path compression: make all nodes point directly to the root
     while parent[curr] != root:
         nxt = parent[curr]
         parent[curr] = root
@@ -32,8 +30,8 @@ cdef void union_sets(int* parent, int i, int j) nogil:
 
 def _fast_graph_segmentation(cnp.float64_t[:, :, ::1] image, double threshold):
     """
-    Simplified segmentation: merges adjacent pixels if their
-    squared Euclidean color distance is below the threshold.
+    Simplified segmentation with implicit depth-ramp prevention.
+    Flying pixels (ramps) are assigned a label of -1.
     """
     cdef int height = image.shape[0]
     cdef int width = image.shape[1]
@@ -45,18 +43,44 @@ def _fast_graph_segmentation(cnp.float64_t[:, :, ::1] image, double threshold):
     cdef int[::1] parent_view = parent_arr
     cdef int* parent = &parent_view[0]
 
+    # The implicit edge mask array
+    cdef cnp.ndarray[cnp.uint8_t, ndim=2] safe_mask_arr = np.ones((height, width), dtype=np.uint8)
+    cdef cnp.uint8_t[:, ::1] safe_mask = safe_mask_arr
+
     cdef int r, c, k
     cdef double dist_sq, diff
     cdef int curr_idx, neighbor_idx
+
     cdef double thresh_sq = threshold * threshold
+    cdef double max_span_sq = thresh_sq * 1.0
 
     with nogil:
+        # --- PASS 1: Identify Edge/Ramp Pixels ---
+        for r in range(height):
+            for c in range(width):
+                if c > 0 and c < width - 1:
+                    dist_sq = 0.0
+                    for k in range(channels):
+                        diff = image[r, c+1, k] - image[r, c-1, k]
+                        dist_sq += diff * diff
+                    if dist_sq > max_span_sq:
+                        safe_mask[r, c] = 0
+                        continue
+
+                if r > 0 and r < height - 1:
+                    dist_sq = 0.0
+                    for k in range(channels):
+                        diff = image[r+1, c, k] - image[r-1, c, k]
+                        dist_sq += diff * diff
+                    if dist_sq > max_span_sq:
+                        safe_mask[r, c] = 0
+
+        # --- PASS 2: DSU Merging ---
         for r in range(height):
             for c in range(width):
                 curr_idx = r * width + c
 
-                # Check Left Neighbor
-                if c > 0:
+                if c > 0 and safe_mask[r, c] and safe_mask[r, c - 1]:
                     neighbor_idx = curr_idx - 1
                     dist_sq = 0.0
                     for k in range(channels):
@@ -66,8 +90,7 @@ def _fast_graph_segmentation(cnp.float64_t[:, :, ::1] image, double threshold):
                     if dist_sq <= thresh_sq:
                         union_sets(parent, curr_idx, neighbor_idx)
 
-                # Check Up Neighbor
-                if r > 0:
+                if r > 0 and safe_mask[r, c] and safe_mask[r - 1, c]:
                     neighbor_idx = curr_idx - width
                     dist_sq = 0.0
                     for k in range(channels):
@@ -77,14 +100,18 @@ def _fast_graph_segmentation(cnp.float64_t[:, :, ::1] image, double threshold):
                     if dist_sq <= thresh_sq:
                         union_sets(parent, curr_idx, neighbor_idx)
 
-    # Flatten all trees so every node points directly to its root
+    # Flatten all trees
     for r in range(num_pixels):
         parent_arr[r] = find(parent, r)
 
-    # Fast, vectorized relabeling mapping arbitrary roots to [0, N-1]
+    # Fast relabeling mapping arbitrary roots to [0, N-1]
     _, labels_flat = np.unique(parent_arr, return_inverse=True)
+    labels_2d = labels_flat.reshape((height, width)).astype(np.int32)
 
-    return labels_flat.reshape((height, width)).astype(np.int32)
+    # Assign -1 to all pixels that failed the safety mask
+    labels_2d[safe_mask_arr == 0] = -1
+
+    return labels_2d
 
 
 def fast_graph_segmentation(image, threshold):
