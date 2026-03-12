@@ -43,7 +43,7 @@ def batched_image_op_wrapper(
     # sequential path
     if n_jobs == 1:
         return np.stack([
-            op_func(images[i], *args, **kwargs)
+            op_func(images[i], *args, **kwargs, batch_idx=i)
             for i in range(B)
         ], axis=0).astype(np.intp, copy=False)
 
@@ -51,7 +51,7 @@ def batched_image_op_wrapper(
     results = [None] * B
     with ThreadPoolExecutor(max_workers=n_jobs) as ex:
         promises = {
-            ex.submit(op_func, images[i], *args, **kwargs): i
+            ex.submit(op_func, images[i], *args, **kwargs, batch_idx=i): i
             for i in range(B)
         }
         for promise in as_completed(promises):

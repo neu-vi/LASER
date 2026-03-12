@@ -49,7 +49,8 @@ def segment_depth_felzenszwalb_rag(
         top_conf_percentile=None,
         seg_scale=300,
         seg_sigma=1.1,
-        seg_min_size=500
+        seg_min_size=500,
+        batch_idx=None
 ):
     seg_mask = felzenszwalb(depth_map, scale=seg_scale, sigma=seg_sigma, min_size=seg_min_size)
     # depth_img = gray2rgb(depth_map)
@@ -57,8 +58,8 @@ def segment_depth_felzenszwalb_rag(
     #
     # seg_mask_merged = graph.cut_threshold(seg_mask, rag, merge_thresh)
     if conf_map is not None and top_conf_percentile is not None:
-        conf_thresh = np.quantile(conf_map.reshape(conf_map.shape[0], -1), top_conf_percentile, axis=1,
-                                  method='nearest')[:, None, None]
+        conf_map = conf_map[batch_idx]
+        conf_thresh = np.quantile(conf_map.reshape(-1), top_conf_percentile, axis=1, method='nearest')
         conf_depth = depth_map[conf_map >= conf_thresh]
     else:
         conf_depth = depth_map
@@ -73,10 +74,11 @@ def segment_depth_graph_fast(
         depth_merge_thresh,
         conf_map=None,
         top_conf_percentile=None,
+        batch_idx=None
 ):
     if conf_map is not None and top_conf_percentile is not None:
-        conf_thresh = np.quantile(conf_map.reshape(conf_map.shape[0], -1), top_conf_percentile, axis=1,
-                                  method='nearest')[:, None, None]
+        conf_map = conf_map[batch_idx]
+        conf_thresh = np.quantile(conf_map.reshape(-1), top_conf_percentile, axis=1, method='nearest')
         conf_depth = depth_map[conf_map >= conf_thresh]
     else:
         conf_depth = depth_map
