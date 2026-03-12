@@ -15,7 +15,7 @@ def dict_to_device(data, device):
     return data
 
 
-def sliding_window(arr, window_size, overlap, dim=0):
+def sliding_window_t(arr, window_size, overlap, dim=0):
     step = window_size - overlap
     assert step > 0, "Overlap must be smaller than window_size"
     ndim = arr.ndim if hasattr(arr, "ndim") else arr.dim()
@@ -31,6 +31,25 @@ def sliding_window(arr, window_size, overlap, dim=0):
         window = arr[tuple(slc)]
 
         if i == 0 or window.shape[dim] > overlap:
+            windows.append(window)
+        else:
+            break
+
+    return windows
+
+
+def sliding_window_l(li, window_size, overlap):
+    step = window_size - overlap
+    assert step > 0, "Overlap must be smaller than window_size"
+
+    length = len(li)
+    windows = []
+
+    for i in range(0, length, step):
+        # Slice the 1D list
+        window = li[i: i + window_size]
+
+        if i == 0 or len(window) > overlap:
             windows.append(window)
         else:
             break

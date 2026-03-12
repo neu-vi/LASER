@@ -73,17 +73,17 @@ def sliding_window(lst, window_size, overlap):
     return windows
 
 
-def run_model(image_names, scene_name, output_path):
-    images = load_and_preprocess_images(image_names).to(device)
-    image_windows = model.img_sliding_window(images)
+def run_model(image_names):
+    image_name_windows = model.img_sliding_window(image_names)
 
     start_ev = torch.cuda.Event(enable_timing=True)
     end_ev = torch.cuda.Event(enable_timing=True)
     model.begin()
 
     start_ev.record()
-    for sample in tqdm(image_windows, 'Window inference'):
-        model(sample)
+    for sample in tqdm(image_name_windows, 'Window inference'):
+        imgs = load_and_preprocess_images(sample).to(device)
+        model(imgs)
     model.end()
     end_ev.record()
 
@@ -116,7 +116,7 @@ def run_dynamic_scene(args):
     img_names = [os.path.join(data_path, name) for name in img_names if name.endswith(('.png', '.jpg', '.jpeg'))][
                 ::args.sample_interval]
     print(f'Found {len(img_names)} images.')
-    run_model(img_names, scene_name, args.output_path)
+    run_model(img_names)
     return scene_name
 
 

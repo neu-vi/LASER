@@ -55,16 +55,16 @@ def load_model(args):
 
 
 def run_model(image_names, scene_name, output_path):
-    images = load_and_preprocess_images(image_names).to(device)
-    image_windows = model.img_sliding_window(images)
+    image_name_windows = model.img_sliding_window(image_names)
 
     start_ev = torch.cuda.Event(enable_timing=True)
     end_ev = torch.cuda.Event(enable_timing=True)
     model.begin()
 
     start_ev.record()
-    for sample in tqdm(image_windows, 'Window inference'):
-        model(sample)
+    for sample in tqdm(image_name_windows, 'Window inference'):
+        imgs = load_and_preprocess_images(sample).to(device)
+        model(imgs)
     model.end()
     end_ev.record()
 

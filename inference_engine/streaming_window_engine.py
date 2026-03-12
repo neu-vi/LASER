@@ -21,7 +21,8 @@ from .inference_utils import (
     apply_sim3_to_pose,
     make_sp_graph,
     refine_depth_segments,
-    sliding_window
+    sliding_window_t,
+    sliding_window_l
 )
 from .utils.geometry import homogenize_points
 
@@ -255,9 +256,12 @@ class StreamingWindowEngine(SlidingWindowEngine):
         self.running = False
 
     def img_sliding_window(self, imgs):
-        if len(imgs.shape) == 5:
-            return sliding_window(imgs, self.window_size, self.overlap, dim=1)
-        return sliding_window(imgs, self.window_size, self.overlap, dim=0)
+        if isinstance(imgs, torch.Tensor):
+            if len(imgs.shape) == 5:
+                return sliding_window_t(imgs, self.window_size, self.overlap, dim=1)
+            return sliding_window_t(imgs, self.window_size, self.overlap, dim=0)
+        elif isinstance(imgs, list):
+            return sliding_window_l(imgs, self.window_size, self.overlap)
 
     @staticmethod
     def parse_cache_file(cache_file, overlap=0):
