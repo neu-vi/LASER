@@ -4,7 +4,7 @@ import torch.nn as nn
 from .vanilla_engine import VanillaEngine
 from .inference_utils import (
     dict_to_device,
-    sliding_window,
+    sliding_window_t,
     aggregate_windows,
     register_extrinsic_windows
 )
@@ -27,7 +27,7 @@ class SlidingWindowEngine(VanillaEngine):
 
     def forward(self, images, depth_refine=True, debug=False, **kwargs):
         dim = 1 if len(images.shape) == 5 else 0
-        image_windows = sliding_window(images, self.window_size, self.overlap, dim=dim)
+        image_windows = sliding_window_t(images, self.window_size, self.overlap, dim=dim)
         prediction_windows = []
         for sample in image_windows:
             prediction_windows.append(dict_to_device(self.delegate(sample), self.intermediate_device))
