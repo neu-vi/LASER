@@ -113,6 +113,22 @@ dataset_metadata = {
         'mask_path_seq_func': lambda mask_path, seq: None,
         'skip_condition': None,
         'process_func': lambda args, img_path: process_waymo(args, img_path)
+    },
+    'vbr': {
+        'img_path': "data/vbr",  # Default path
+        'mask_path': None,
+        'dir_path_func': lambda img_path, seq: os.path.join(img_path, seq, 'rgb'),
+        'gt_traj_func': lambda img_path, anno_path, seq: os.path.join(img_path, seq, f'camera_pose.txt'),
+        'traj_format': 'tum',
+        'seq_list': [
+            'campus_train0_processed_aligned', 'campus_train1_processed_aligned', 'ciampino_train1_processed_aligned',
+            'colosseo_train0_processed_aligned', 'diag_train0_processed_aligned', 'pincio_train0_processed_aligned',
+            'spagna_train0_processed_aligned'
+        ],
+        'full_seq': False,
+        'mask_path_seq_func': lambda mask_path, seq: None,
+        'skip_condition': None,
+        'process_func': None
     }
 }
 
