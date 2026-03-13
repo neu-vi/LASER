@@ -113,8 +113,8 @@ class LoopClosureEngine:
             if isinstance(predictions[key], torch.Tensor):
                 predictions[key] = predictions[key].cpu().squeeze(0)
 
-        conf_thre = torch.quantile(predictions['conf'], self.top_conf_percentile, interpolation='nearest')
-        predictions['mask'] = predictions['conf'] >= conf_thre
+        # conf_thre = torch.quantile(predictions['conf'], self.top_conf_percentile, interpolation='nearest')
+        # predictions['mask'] = predictions['conf'] >= conf_thre
 
         return predictions
 
@@ -144,14 +144,20 @@ class LoopClosureEngine:
 
             point_map_loop = item[1]['local_points'][:chunk_a_range[1] - chunk_a_range[0]]
             cam_pose_loop = item[1]['camera_poses'][:chunk_a_range[1] - chunk_a_range[0]]
-            conf_mask_loop = item[1]['mask'][:chunk_a_range[1] - chunk_a_range[0]]
+            # conf_mask_loop = item[1]['mask'][:chunk_a_range[1] - chunk_a_range[0]]
+            conf_map_loop = item[1]['conf'][:chunk_a_range[1] - chunk_a_range[0]]
+            conf_loop_thresh = torch.quantile(conf_map_loop, self.top_conf_percentile, interpolation='nearest')
+            conf_mask_loop = conf_map_loop >= conf_loop_thresh
 
             chunk_a_rela_begin = chunk_a_range[0] - self.chunk_indices[chunk_idx_a][0]
             chunk_a_rela_end = chunk_a_rela_begin + chunk_a_range[1] - chunk_a_range[0]
             chunk_data_a = raw_predictions[chunk_idx_a]
             point_map_a = chunk_data_a['local_points'][chunk_a_rela_begin:chunk_a_rela_end]
             cam_pose_a = chunk_data_a['camera_poses'][chunk_a_rela_begin:chunk_a_rela_end]
-            conf_mask_a = chunk_data_a['mask'][chunk_a_rela_begin:chunk_a_rela_end]
+            # conf_mask_a = chunk_data_a['mask'][chunk_a_rela_begin:chunk_a_rela_end]
+            conf_map_a = chunk_data_a['conf'][chunk_a_rela_begin:chunk_a_rela_end]
+            conf_a_thresh = torch.quantile(conf_map_a, self.top_conf_percentile, interpolation='nearest')
+            conf_mask_a = conf_map_a >= conf_a_thresh
 
             s_a, R_a, t_a = register_adjacent_windows(
                 point_map_a,
