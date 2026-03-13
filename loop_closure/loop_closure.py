@@ -169,14 +169,20 @@ class LoopClosureEngine:
 
             point_map_loop = item[1]['local_points'][-chunk_b_range[1] + chunk_b_range[0]:]
             cam_pose_loop = item[1]['camera_poses'][-chunk_b_range[1] + chunk_b_range[0]:]
-            conf_mask_loop = item[1]['mask'][-chunk_b_range[1] + chunk_b_range[0]:]
+            # conf_mask_loop = item[1]['mask'][-chunk_b_range[1] + chunk_b_range[0]:]
+            conf_map_loop = item[1]['conf'][-chunk_b_range[1] + chunk_b_range[0]:]
+            conf_loop_thresh = torch.quantile(conf_map_loop, self.top_conf_percentile, interpolation='nearest')
+            conf_mask_loop = conf_map_loop >= conf_loop_thresh
 
             chunk_b_rela_begin = chunk_b_range[0] - self.chunk_indices[chunk_idx_b][0]
             chunk_b_rela_end = chunk_b_rela_begin + chunk_b_range[1] - chunk_b_range[0]
             chunk_data_b = raw_predictions[chunk_idx_b]
             point_map_b = chunk_data_b['local_points'][chunk_b_rela_begin:chunk_b_rela_end]
             cam_pose_b = chunk_data_b['camera_poses'][chunk_b_rela_begin:chunk_b_rela_end]
-            conf_mask_b = chunk_data_b['mask'][chunk_b_rela_begin:chunk_b_rela_end]
+            # conf_mask_b = chunk_data_b['mask'][chunk_b_rela_begin:chunk_b_rela_end]
+            conf_map_b = chunk_data_b['conf'][chunk_b_rela_begin:chunk_b_rela_end]
+            conf_b_thresh = torch.quantile(conf_map_b, self.top_conf_percentile, interpolation='nearest')
+            conf_mask_b = conf_map_b >= conf_b_thresh
 
             s_b, R_b, t_b = register_adjacent_windows(
                 point_map_b,
