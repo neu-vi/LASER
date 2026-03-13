@@ -62,7 +62,7 @@ def eval_pose_estimation_dist(args, pose_dir, save_dir=None, inverse_extrinsic=T
 
     for seq in tqdm(seq_list):
         try:
-            pred_traj = load_traj(os.path.join(pose_dir, seq, 'camera_poses.txt'), traj_format='replica')
+            pred_traj = load_traj(os.path.join(pose_dir, seq, 'pred_traj.txt'), traj_format='tum')
             if inverse_extrinsic:
                 pred_traj = closed_form_inverse_se3(pred_traj)  # shape (S, 4, 4) typically
                 # For convenience, we store only (3,4) portion, cam_to_world
