@@ -72,9 +72,9 @@ class StreamingWindowEngineLC(StreamingWindowEngine):
                     ref_intrinsic
                 )
                 # mutual conf mask
-                prev_conf_thresh = torch.quantile(self.prev_window_cache['conf'][:self.overlap],
+                prev_conf_thresh = torch.quantile(self.prev_window_cache['conf'][-self.overlap:],
                                                   self.top_conf_percentile, interpolation='nearest')
-                conf_mask = (self.prev_window_cache['conf'][:self.overlap] >= prev_conf_thresh) & tgt_mask
+                conf_mask = (self.prev_window_cache['conf'][-self.overlap:] >= prev_conf_thresh) & tgt_mask
 
                 # metric depth align
                 prev_local_points = self.prev_window_cache['local_points'][-self.overlap:]
